@@ -2,129 +2,148 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 
+router.get('/js', function (req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
-  var stringtong = "";
-  var vietnamairline = false;
-  var jetstar = false;
-  var vietjet = false;
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
-  var searchve = function(callback1,callback2,checkxuatstring) {
-    var options = { method: 'POST',
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  var options = {
+    method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
     qs: { airlines: 'js' },
-    headers: 
-     { 'postman-token': '65091745-d6d7-e122-57bc-7eddcd2a422a',
-       'cache-control': 'no-cache',
-       'content-type': 'application/x-www-form-urlencoded' },
-    form: 
-     { direction: '0',
-       loaive: '0',
-       depinput: 'Hồ Chí Minh (SGN)',
-       desinput: 'Đà Lạt (DLI)',
-       dep: 'SGN',
-       des: 'DLI',
-       depdate: '30-07-2018',
-       resdate: '31-07-2018',
-       adult: '1',
-       child: '0',
-       infant: '0',
-       cache: 'CXRHAN12-04-2018-04-20-37',
-       typeflight: '0' } };
-  
+    headers:
+    {
+      'postman-token': '65091745-d6d7-e122-57bc-7eddcd2a422a',
+      'cache-control': 'no-cache',
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    form:
+    {
+      direction: '0',
+      loaive: '0',
+      depinput: 'Hồ Chí Minh (SGN)',
+      desinput: 'Đà Lạt (DLI)',
+      dep: 'SGN',
+      des: 'DLI',
+      depdate: '01-08-2018',
+      resdate: '02-08-2018',
+      adult: '1',
+      child: '0',
+      infant: '0',
+      cache: 'CXRHAN12-04-2018-04-20-37',
+      typeflight: '0'
+    }
+  };
+
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-  
-    console.log(body + "ĐÂY LÀ JETSTAR");
-    stringtong+=body;
-    jetstar=true;
-    callback1(callback2,checkxuatstring);
+    //console.log(body + "ĐÂY LÀ JETSTAR");
+    res.send(body);
   });
-    
-}
+});
 
-var searchve2 = function(callback,checkxuatstring) {
-  var options = { method: 'POST',
+router.get('/vj', function (req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  var options = {
+    method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
     qs: { airlines: 'vj' },
-    headers: 
-     { 'postman-token': '65091745-d6d7-e122-57bc-7eddcd2a422a',
-       'cache-control': 'no-cache',
-       'content-type': 'application/x-www-form-urlencoded' },
-    form: 
-     { direction: '0',
-       loaive: '0',
-       depinput: 'Hồ Chí Minh (SGN)',
-       desinput: 'Đà Lạt (DLI)',
-       dep: 'SGN',
-       des: 'DLI',
-       depdate: '30-07-2018',
-       resdate: '31-07-2018',
-       adult: '1',
-       child: '0',
-       infant: '0',
-       cache: 'CXRHAN12-04-2018-04-20-37',
-       typeflight: '0' } };
-  
+    headers:
+    {
+      'postman-token': '65091745-d6d7-e122-57bc-7eddcd2a422a',
+      'cache-control': 'no-cache',
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    form:
+    {
+      direction: '0',
+      loaive: '0',
+      depinput: 'Hồ Chí Minh (SGN)',
+      desinput: 'Đà Lạt (DLI)',
+      dep: 'SGN',
+      des: 'DLI',
+      depdate: '01-08-2018',
+      resdate: '02-08-2018',
+      adult: '1',
+      child: '0',
+      infant: '0',
+      cache: 'CXRHAN12-04-2018-04-20-37',
+      typeflight: '0'
+    }
+  };
+
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-  
-    console.log(body + "ĐÂY LÀ VIETJET");
-    stringtong+=body;
-    vietjet=true;
-    callback(checkxuatstring);
+    //console.log(body + "ĐÂY LÀ JETSTAR");
+    res.send(body);
   });
-}
+});
 
-var searchve3 = function(checkxuatstring) {
-  var options = { method: 'POST',
+router.get('/vn', function (req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  var options = {
+    method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
     qs: { airlines: 'vn' },
-    headers: 
-     { 'postman-token': '65091745-d6d7-e122-57bc-7eddcd2a422a',
-       'cache-control': 'no-cache',
-       'content-type': 'application/x-www-form-urlencoded' },
-    form: 
-     { direction: '0',
-       loaive: '0',
-       depinput: 'Hồ Chí Minh (SGN)',
-       desinput: 'Đà Lạt (DLI)',
-       dep: 'SGN',
-       des: 'DLI',
-       depdate: '30-07-2018',
-       resdate: '31-07-2018',
-       adult: '1',
-       child: '0',
-       infant: '0',
-       cache: 'CXRHAN12-04-2018-04-20-37',
-       typeflight: '0' } };
-  
+    headers:
+    {
+      'postman-token': '65091745-d6d7-e122-57bc-7eddcd2a422a',
+      'cache-control': 'no-cache',
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    form:
+    {
+      direction: '0',
+      loaive: '0',
+      depinput: 'Hồ Chí Minh (SGN)',
+      desinput: 'Đà Lạt (DLI)',
+      dep: 'SGN',
+      des: 'DLI',
+      depdate: '01-08-2018',
+      resdate: '02-08-2018',
+      adult: '1',
+      child: '0',
+      infant: '0',
+      cache: 'CXRHAN12-04-2018-04-20-37',
+      typeflight: '0'
+    }
+  };
+
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-  
-    console.log(body + "ĐÂY LÀ VNAIRLINE");
-    stringtong+=body;
-    vietnamairline=true;
-    checkxuatstring(vietjet,jetstar,vietnamairline);
+    //console.log(body + "ĐÂY LÀ JETSTAR");
+    res.send(body);
   });
-}
-
-var checkxuatstring = function(vietjet,jetstar,vietnamairline){
-  if(vietjet&&jetstar&&vietnamairline){
-    res.send(stringtong);
-  }else{
-    res.send("error");
-  }
-} 
-
-searchve(searchve2,searchve3,checkxuatstring);
-  
-
-
-   
-  
 });
 
 module.exports = router;
