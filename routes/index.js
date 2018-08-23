@@ -132,11 +132,154 @@ router.get('/vn', function (req, res, next) {
 
 router.post('/vn', function (req, res, next) {
 
- 
-  var ten = req.body.firstName;
-  var ho = req.body.lastName;
-  res.send(ten + ho);
+   // Website you wish to allow to connect	 
+   //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
+   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+   // Request methods you wish to allow	
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
+   // Request headers you wish to allow	
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');	
+   // Set to true if you need the website to include cookies in the requests sent	
+  // to the API (e.g. in case you use sessions)	
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  var dep = req.body.dep;
+  var des = req.body.des;
+  var datetime = req.body.datetime;
+  var adult = req.body.adult;
+  var options = { method: 'POST',
+  url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
+  qs: { airlines: 'vn' },
+  headers: 
+   { 'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+     'cache-control': 'no-cache',
+     'content-type': 'application/x-www-form-urlencoded' },
+  form: 
+   { direction: '0',
+     loaive: '0',
+     depinput: '',
+     desinput: '',
+     dep: dep,
+     des: des,
+     depdate: datetime,
+     resdate: '',
+     adult: adult,
+     child: '0',
+     infant: '0',
+     cache: '',
+     typeflight: '0' } };
+
+  request(options, function (error, response, body) {
+    if (error) throw new Error(error);
+    //console.log(body + "ĐÂY LÀ JETSTAR");
+    //res.send(body);
+    //res.send(dep +" "+ des+" " + datetime+" " + adult);
+    console.log(dep +" "+ des+" " + datetime+" " + adult);
+    console.log(body);
+    res.send(body);
+  });
+  //res.send(dep +" "+ des+" " + datetime+" " + adult);
   
+});
+
+router.post('/js', function (req, res, next) {
+
+  // Website you wish to allow to connect	 
+  //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+  // Request methods you wish to allow	
+ res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
+  // Request headers you wish to allow	
+ res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');	
+  // Set to true if you need the website to include cookies in the requests sent	
+ // to the API (e.g. in case you use sessions)	
+ res.setHeader('Access-Control-Allow-Credentials', true);
+ var dep = req.body.dep;
+ var des = req.body.des;
+ var datetime = req.body.datetime;
+ var adult = req.body.adult;
+ var options = { method: 'POST',
+ url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
+ qs: { airlines: 'js' },
+ headers: 
+  { 'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+    'cache-control': 'no-cache',
+    'content-type': 'application/x-www-form-urlencoded' },
+ form: 
+  { direction: '0',
+    loaive: '0',
+    depinput: '',
+    desinput: '',
+    dep: dep,
+    des: des,
+    depdate: datetime,
+    resdate: '',
+    adult: adult,
+    child: '0',
+    infant: '0',
+    cache: '',
+    typeflight: '0' } };
+
+ request(options, function (error, response, body) {
+   if (error) throw new Error(error);
+   //console.log(body + "ĐÂY LÀ JETSTAR");
+   //res.send(body);
+   //res.send(dep +" "+ des+" " + datetime+" " + adult);
+   console.log(dep +" "+ des+" " + datetime+" " + adult);
+   console.log(body);
+   res.send(body);
+ });
+ //res.send(dep +" "+ des+" " + datetime+" " + adult);
+ 
+});
+router.post('/vj', function (req, res, next) {
+
+  // Website you wish to allow to connect	 
+  //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+  // Request methods you wish to allow	
+ res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
+  // Request headers you wish to allow	
+ res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');	
+  // Set to true if you need the website to include cookies in the requests sent	
+ // to the API (e.g. in case you use sessions)	
+ res.setHeader('Access-Control-Allow-Credentials', true);
+ var dep = req.body.dep;
+ var des = req.body.des;
+ var datetime = req.body.datetime;
+ var adult = req.body.adult;
+ var options = { method: 'POST',
+ url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
+ qs: { airlines: 'vj' },
+ headers: 
+  { 'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+    'cache-control': 'no-cache',
+    'content-type': 'application/x-www-form-urlencoded' },
+ form: 
+  { direction: '0',
+    loaive: '0',
+    depinput: '',
+    desinput: '',
+    dep: dep,
+    des: des,
+    depdate: datetime,
+    resdate: '',
+    adult: adult,
+    child: '0',
+    infant: '0',
+    cache: '',
+    typeflight: '0' } };
+
+ request(options, function (error, response, body) {
+   if (error) throw new Error(error);
+   //console.log(body + "ĐÂY LÀ JETSTAR");
+   //res.send(body);
+   //res.send(dep +" "+ des+" " + datetime+" " + adult);
+   console.log(dep +" "+ des+" " + datetime+" " + adult);
+   console.log(body);
+   res.send(body);
+ });
+ //res.send(dep +" "+ des+" " + datetime+" " + adult);
+ 
 });
 
 module.exports = router;
