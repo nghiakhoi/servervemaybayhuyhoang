@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 
+var domainname = "http://vemaybayhuyhoang.ga"
+//var domainname = "http://localhost:3000"
+
 router.get('/', function (req, res, next) {
   res.send('OKAY');
 });
@@ -9,7 +12,7 @@ router.get('/', function (req, res, next) {
 router.get('/js', function (req, res, next) {
   // Website you wish to allow to connect	 
    //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
-   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+   res.setHeader('Access-Control-Allow-Origin', domainname);	
    // Request methods you wish to allow	
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
    // Request headers you wish to allow	
@@ -56,7 +59,7 @@ router.get('/js', function (req, res, next) {
 router.get('/vj', function (req, res, next) {
   // Website you wish to allow to connect	 
    //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
-   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+   res.setHeader('Access-Control-Allow-Origin', domainname);	
    // Request methods you wish to allow	
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
    // Request headers you wish to allow	
@@ -103,7 +106,7 @@ router.get('/vj', function (req, res, next) {
 router.get('/vn', function (req, res, next) {
   // Website you wish to allow to connect	 
    //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
-   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+   res.setHeader('Access-Control-Allow-Origin', domainname);	
    // Request methods you wish to allow	
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
    // Request headers you wish to allow	
@@ -152,7 +155,7 @@ router.post('/vn', function (req, res, next) {
 
    // Website you wish to allow to connect	 
    //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
-   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+   res.setHeader('Access-Control-Allow-Origin', domainname);	
    // Request methods you wish to allow	
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
    // Request headers you wish to allow	
@@ -207,7 +210,7 @@ router.post('/js', function (req, res, next) {
 
   // Website you wish to allow to connect	 
   //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+  res.setHeader('Access-Control-Allow-Origin', domainname);	
   // Request methods you wish to allow	
  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
   // Request headers you wish to allow	
@@ -260,7 +263,7 @@ router.post('/vj', function (req, res, next) {
 
   // Website you wish to allow to connect	 
   //res.setHeader('Access-Control-Allow-Origin', 'http://vemaybayhuyhoang.ga');	
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');	
+  res.setHeader('Access-Control-Allow-Origin', domainname);	
   // Request methods you wish to allow	
  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');	
   // Request headers you wish to allow	
