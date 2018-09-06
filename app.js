@@ -44,7 +44,7 @@ app.post('/vn',cors(corsOptionsDelegate), function (req, res, next) {
   
   var dep = req.body.dep;
   var des = req.body.des;
-  var datedes=req.body.datedes;
+  var datedep=req.body.datedep;
   var depdate=req.body.depdate;
   //var datetime = req.body.datetime;
   var adult = req.body.adult;
@@ -64,7 +64,7 @@ app.post('/vn',cors(corsOptionsDelegate), function (req, res, next) {
      desinput: '',
      dep: dep,
      des: des,
-     depdate: depdate,
+     depdate: datedep,
      resdate: '',
      adult: adult,
      child: '0',
@@ -77,7 +77,7 @@ app.post('/vn',cors(corsOptionsDelegate), function (req, res, next) {
     //console.log(body + "ĐÂY LÀ JETSTAR");
     //res.send(body);
     //res.send(dep +" "+ des+" " + datetime+" " + adult);
-    console.log(dep +" "+ des+" " + depdate+" "+ +" " + adult );
+    console.log(dep +" "+ des+" " + datedep+" "+ +" " + adult );
     console.log(body);
     res.send(body);
   });
@@ -90,7 +90,7 @@ app.post('/js',cors(corsOptionsDelegate), function (req, res, next) {
   
  var dep = req.body.dep;
  var des = req.body.des;
- var depdate = req.body.depdate;
+ var datedep = req.body.datedep;
  var datedes= req.body.datedes;
  var adult = req.body.adult;
  
@@ -109,7 +109,7 @@ app.post('/js',cors(corsOptionsDelegate), function (req, res, next) {
     desinput: '',
     dep: dep,
     des: des,
-    depdate: depdate,
+    depdate: datedep,
     resdate: '',
     adult: adult,
     child: '0',
@@ -122,7 +122,7 @@ app.post('/js',cors(corsOptionsDelegate), function (req, res, next) {
    //console.log(body + "ĐÂY LÀ JETSTAR");
    //res.send(body);
    //res.send(dep +" "+ des+" " + datetime+" " + adult);
-   console.log(dep +" "+ des+" " + depdate+" "+ +" " + adult);
+   console.log(dep +" "+ des+" " + datedep+" "+ +" " + adult);
    console.log(body);
    res.send(body);
  });
@@ -135,7 +135,7 @@ app.post('/vj',cors(corsOptionsDelegate), function (req, res, next) {
   
  var dep = req.body.dep;
  var des = req.body.des;
- var depdate = req.body.depdate;
+ var datedep = req.body.datedep;
  var datedes = req.body.datedes;
  console.log(req.body);
  var adult = req.body.adult;
@@ -153,7 +153,7 @@ app.post('/vj',cors(corsOptionsDelegate), function (req, res, next) {
     desinput: '',
     dep: dep,
     des: des,
-    depdate: depdate,
+    depdate: datedep,
     resdate: '',
     adult: adult,
     child: '0',
@@ -166,7 +166,7 @@ app.post('/vj',cors(corsOptionsDelegate), function (req, res, next) {
    //console.log(body + "ĐÂY LÀ JETSTAR");
    //res.send(body);
    //res.send(dep +" "+ des+" " + datetime+" " + adult);
-   console.log(dep +" "+ des+" " + depdate+" "+ +" " + adult);
+   console.log(dep +" "+ des+" " + datedep+" "+ +" " + adult);
    console.log(body);
    res.send(body);
  });
