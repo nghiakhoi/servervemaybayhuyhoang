@@ -46,12 +46,9 @@ app.post('/vn', cors(corsOptionsDelegate), function (req, res, next) {
   var des = req.body.des;
   var datedep = req.body.datedep;
   var depdate = req.body.depdate;
-  //var datetime = req.body.datetime;
   var adult = req.body.adult;
   var child = req.body.child;
   var inf = req.body.inf;
-
-  console.log(req.body);
   var options = {
     method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
@@ -82,15 +79,8 @@ app.post('/vn', cors(corsOptionsDelegate), function (req, res, next) {
 
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-    //console.log(body + "ĐÂY LÀ JETSTAR");
-    //res.send(body);
-    //res.send(dep +" "+ des+" " + datetime+" " + adult);
-    console.log(dep + " " + des + " " + datedep + " " + +" " + adult);
-    console.log(body);
     res.send(body);
   });
-  //res.send(dep +" "+ des+" " + datetime+" " + adult);
-
 });
 
 app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
@@ -104,7 +94,6 @@ app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
   var child = req.body.child;
   var inf = req.body.inf;
 
-  console.log(req.body);
   var options = {
     method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
@@ -135,14 +124,8 @@ app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
 
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-    //console.log(body + "ĐÂY LÀ JETSTAR");
-    //res.send(body);
-    //res.send(dep +" "+ des+" " + datetime+" " + adult);
-    console.log(dep + " " + des + " " + datedep + " " + +" " + adult);
-    console.log(body);
     res.send(body);
   });
-  //res.send(dep +" "+ des+" " + datetime+" " + adult);
 
 });
 
@@ -186,14 +169,53 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
 
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-    //console.log(body + "ĐÂY LÀ JETSTAR");
-    //res.send(body);
-    //res.send(dep +" "+ des+" " + datetime+" " + adult);
-    console.log(dep + " " + des + " " + datedep + " " + +" " + adult);
-    console.log(body);
     res.send(body);
   });
-  //res.send(dep +" "+ des+" " + datetime+" " + adult);
+
+});
+
+app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
+
+
+  var dep = req.body.dep;
+  var des = req.body.des;
+  var datedep = req.body.datedep;
+  var datedes = req.body.datedes;
+  var adult = req.body.adult;
+  var child = req.body.child;
+  var inf = req.body.inf;
+  var options = {
+    method: 'POST',
+    url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
+    qs: { airlines: 'vj' },
+    headers:
+    {
+      'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+      'cache-control': 'no-cache',
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    form:
+    {
+      direction: '0',
+      loaive: '0',
+      depinput: '',
+      desinput: '',
+      dep: dep,
+      des: des,
+      depdate: datedep,
+      resdate: '',
+      adult: adult,
+      child: child,
+      infant: inf,
+      cache: '',
+      typeflight: '0'
+    }
+  };
+
+  request(options, function (error, response, body) {
+    if (error) throw new Error(error);
+    res.send(body);
+  });
 
 });
 
