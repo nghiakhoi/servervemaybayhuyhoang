@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const { Pool, Client } = require('pg');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -19,6 +20,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'vemaybayhuyhoang',
+  password: '4264720',
+  port: 5432,
+});
+
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -177,46 +188,19 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
 app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
 
 
-  var dep = req.body.dep;
-  var des = req.body.des;
-  var datedep = req.body.datedep;
-  var datedes = req.body.datedes;
-  var adult = req.body.adult;
-  var child = req.body.child;
-  var inf = req.body.inf;
-  var options = {
-    method: 'POST',
-    url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
-    qs: { airlines: 'vj' },
-    headers:
-    {
-      'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
-      'cache-control': 'no-cache',
-      'content-type': 'application/x-www-form-urlencoded'
-    },
-    form:
-    {
-      direction: '0',
-      loaive: '0',
-      depinput: '',
-      desinput: '',
-      dep: dep,
-      des: des,
-      depdate: datedep,
-      resdate: '',
-      adult: adult,
-      child: child,
-      infant: inf,
-      cache: '',
-      typeflight: '0'
-    }
-  };
-
-  request(options, function (error, response, body) {
-    if (error) throw new Error(error);
-    res.send(body);
-  });
-
+  var thongtinvedi = req.body.thongtinvedi;
+  var thongtinveKhuHoi = req.body.thongtinveKhuHoi;
+  console.log(thongtinvedi);
+  console.log(thongtinveKhuHoi);
+  pool.query('SELECT * from chuyenbay')
+  .then(res => {
+    console.log(res.rows[0].loaichuyenbay)
+    console.log(res.rows[1].loaichuyenbay)
+    console.log(res.rows[2].loaichuyenbay)
+  })
+  .catch(e => console.error(e.stack));
+  
+  res.send("ok");
 });
 
 
