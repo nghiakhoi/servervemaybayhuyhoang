@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const { Pool, Client } = require('pg');
+var moment = require('moment');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -190,17 +191,25 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
 
   var thongtinvedi = req.body.thongtinvedi;
   var thongtinveKhuHoi = req.body.thongtinveKhuHoi;
+  var fullname = req.body.fullname;
+  var phone = req.body.phone;
+  var address = req.body.address;
+  var email = req.body.email;
+  var yeucau = req.body.yeucau;
+  var hinhthucthanhtoan = req.body.hinhthucthanhtoan;
+  var subtotaloriginal = req.body.subtotaloriginal;
+  var subtotalwithhanhly = req.body.subtotalwithhanhly;
+  var create_time = moment().format("DD-MM-YYYY HH:mm:ss");
   console.log(thongtinvedi);
   console.log(thongtinveKhuHoi);
-  pool.query('SELECT * from chuyenbay')
-  .then(res => {
-    console.log(res.rows[0].loaichuyenbay)
-    console.log(res.rows[1].loaichuyenbay)
-    console.log(res.rows[2].loaichuyenbay)
-  })
-  .catch(e => console.error(e.stack));
+  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,hinhthucthanhtoan,subtotalorigin,subtotalwithhanhly,create_date) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + hinhthucthanhtoan + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "') RETURNING id")
+    .then(result => {
+      console.log(result.rows[0]);
+      res.send("ok");
+    })
+    .catch(e => console.error(e.stack));
+
   
-  res.send("ok");
 });
 
 
