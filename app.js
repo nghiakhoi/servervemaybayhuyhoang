@@ -293,9 +293,74 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
     .catch(e => console.error(e.stack));
 });
 
-app.post('/getinvoice', cors(corsOptionsDelegate), function (req, res, next) {
-  var idhoadon = req.body.idhoadon;
-  pool.query("SELECT fullname,phone,address,email,yeucau,hinhthucthanhtoan,subtotalorigin,subtotalwithhanhly,donhang.code,jsonchuyenbay,loaichuyenbay,loaihanhkhach,quydanh,ho,tendemvaten,ngaysinh FROM  donhang INNER JOIN chuyenbay ON chuyenbay.iddonhang = donhang.id INNER JOIN hanhkhach ON hanhkhach.idchuyenbay = chuyenbay.id where donhang.id=$1 order by loaihanhkhach", [idhoadon])
+app.post('/getallinvoice', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  donhang order by id desc")
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getinvoicebyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var iddonhang = req.body.iddonhang;
+  pool.query("SELECT donhang.id,fullname,phone,address,email,yeucau,hinhthucthanhtoan,subtotalorigin,subtotalwithhanhly,donhang.code,jsonchuyenbay,loaichuyenbay,loaihanhkhach,quydanh,ho,tendemvaten,ngaysinh,create_date,status FROM  donhang INNER JOIN chuyenbay ON chuyenbay.iddonhang = donhang.id INNER JOIN hanhkhach ON hanhkhach.idchuyenbay = chuyenbay.id where donhang.id=$1 order by loaihanhkhach", [iddonhang])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/editstatusinvoicebyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var iddonhang = req.body.id;
+  var status = req.body.status;
+  pool.query("UPDATE donhang SET status = $1 WHERE id=$2;", [status, iddonhang])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getallsanbay', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  sanbay")
     .then(result => {
       if (result.rows.length === 0) {
         return false;
