@@ -11,6 +11,12 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var request = require('request');
 
+var logoVietjet = "https://vebay247.vn/public/uploads/images/03c30d49e4bcdcdbcc62b44cc9834af8.gif";
+var logoJetstar = "https://vebay247.vn/public/uploads/images/052b06c4307e854914469ba081f740e8.gif";
+var logoVietnamairline = "https://vebay247.vn/public/uploads/images/68f42eb9ea2a79d8a5fa9f15a2a50306.gif";
+
+var tienloigiave = 50000;
+
 var app = express();
 
 // view engine setup
@@ -62,29 +68,55 @@ const printDatachuyenbay = (arraydata, loaichuyenbay) => {
   var findFirstItem = null;
   for (var i = 0; i < arraydata.length; i++) {
     if (arraydata[i].loaichuyenbay === loaichuyenbay) {
-      findFirstItem = JSON.parse(arraydata[i].jsonchuyenbay).datefull;
+      findFirstItem = JSON.parse(arraydata[i].jsonchuyenbay);
       return findFirstItem;
     }
   }
+  return findFirstItem;
+}
+
+const xoa_dau = (str) => {
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+  str = str.replace(/đ/g, "d");
+  str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+  str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+  str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+  str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+  str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+  str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+  str = str.replace(/Đ/g, "D");
+  return str;
 }
 
 const sendMailNow = (iddonhang) => {
   var iddonhang = iddonhang;
+  var temparray = [];
   pool.query("SELECT * FROM  donhang INNER JOIN chuyenbay ON chuyenbay.iddonhang = donhang.id INNER JOIN hanhkhach ON hanhkhach.idchuyenbay = chuyenbay.id where donhang.id=$1 order by loaihanhkhach", [iddonhang])
     .then(ketqua => {
       console.log(ketqua.rows);
-
+      ketqua.rows.map((value, key) => {
+        if (value.loaichuyenbay === "di") {
+          temparray.push(value);
+        }
+      })
       const mailOptions = {
         from: 'hnghiakhoi@gmail.com', // sender address
-        to: 'hnghiakhoi3@gmail.com', // list of receivers
+        to: ketqua.rows[0].email, // list of receivers
+        bcc: 'phutungxemayminhky@gmail.com', // list of receivers
         subject: '[Vemaybayhuyhoang.com] Đơn Đặt Hàng Vé Máy Bay - Mã đơn hàng: ' + ketqua.rows[0].code + ' (' + ketqua.rows[0].create_date + ')', // Subject line
-        html: `<div id=":mu" class="ii gt"><div id=":mt" class="a3s aXjCH " role="gridcell" tabindex="-1"><div class="m_3633905849909431137left_item m_3633905849909431137customer-information"><div class="adM">
+        html: `<div id=":mu" class="ii gt"><div id=":mt" class="a3s aXjCH " role="gridcell" tabindex="-1"><div class="m_3633905849909431137left_item m_3633905849909431137customer-information">
+        <div class="adM">
       </div><div style="padding:5px"><div class="adM">
           </div><div style="background-color:#0062a4;font-weight:bold;color:#fff;padding:4px 10px;margin-top:15px">
              Hệ Thống BOOKING Online của Vemaybayhuyhoang.com
           </div>
           <div style="padding:8px 10px;background-color:#f2f2f2;border:1px solid #0062a4;margin-bottom:10px">
-              Kính Chào Quý Khách, <b>dwqdwqdwq</b>
+              Kính Chào Quý Khách, <b>${ketqua.rows[0].fullname}</b>
               <p style="padding-bottom:10px;border-bottom:1px dashed #dcdcdc;line-height:28px;margin:0px">
                   <b style="color:#0062a4">TỔNG ĐẠI LÝ VÉ MÁY BAY HUY HOÀNG XIN CHÂN THÀNH CÁM ƠN SỰ TÍN NHIỆM ĐẶT VÉ TẠI <a href="http://VEMAYBAYHUYHOANG.COM" target="_blank" >VEMAYBAYHUYHOANG.COM</a> !</b>
               </p>
@@ -176,16 +208,19 @@ const sendMailNow = (iddonhang) => {
                                                   </td>
                                                   <td>
                                                       <b>
-                                                        ${printDatachuyenbay(ketqua.rows, "di")}
+                                                        ${get_day_name(printDatachuyenbay(ketqua.rows, "di").datefull)}, ${get_full_day_format_vietnam(printDatachuyenbay(ketqua.rows, "di").datefull)}
                                                                                               </b>
                                                   </td>
                                                   
-                                                  
-                    <td>Ngày về:                                            </td>
-              <td>
-                  <b>${printDatachuyenbay(ketqua.rows, "khuhoi")}
-                </b>
-                </td>                                   
+                                       ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ?
+            "" : `
+            <td>Ngày về:                                            </td>
+            <td>
+              <b>${get_day_name(printDatachuyenbay(ketqua.rows, "khuhoi").datefull)}, ${get_full_day_format_vietnam(printDatachuyenbay(ketqua.rows, "khuhoi").datefull)}
+              </b>
+            </td> `
+          }           
+                                                      
                                               </tr>
                                 </tbody>
                               </table>
@@ -197,32 +232,29 @@ const sendMailNow = (iddonhang) => {
             </tr>
           <tr class="m_3633905849909431137flight-sum m_3633905849909431137OutBound">
               <td class="m_3633905849909431137logo-flight">
-                  <img align="absmiddle" width="49px" height="29px" src="https://ci5.googleusercontent.com/proxy/Z-hkTrUUzPB5IqBeyQhWVLD1g6unI6FaO4_cGtO8i516l53yT5eRTeVQXaHAHCs_USzg7K-xOTsZ2j95EoXrYdqPpnMTgzztWI0_sQ=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/OutBound.png" alt="Dat Ve May Bay 247, Đại Lý Vé Máy Bay Giá Rẻ Hàng Đầu VeBay247.vn" class="CToWUd">
+                  <img align="absmiddle" width="49px" height="29px" src="https://ci5.googleusercontent.com/proxy/Z-hkTrUUzPB5IqBeyQhWVLD1g6unI6FaO4_cGtO8i516l53yT5eRTeVQXaHAHCs_USzg7K-xOTsZ2j95EoXrYdqPpnMTgzztWI0_sQ=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/OutBound.png" alt="" class="CToWUd">
               </td>
               <td>
-                  Khởi hành từ <b>Thành Phố Hồ Chí Minh ,Việt Nam        	</b>
-              </td>
-              <td colspan="2" style="text-align:right;padding-right:10px">
-                  Thời gian: <b>2</b>
+                  Khởi hành từ <b>${printDatachuyenbay(ketqua.rows, "di").depcode}</b>
               </td>
           </tr>
           <tr>
               <td>
-                  <img align="absmiddle" width="49px" height="29px" src="https://ci4.googleusercontent.com/proxy/aQNnWDrxj5KSym_PdaFJdUMD2FPEtQyz_ciFfMAVsJzCLLuQBjzYdSt-mdWLo8MMMFjzoOs2SAi9T2JVFHrSMSCbOvlgYQJ4cZHiyYxPuCcb9u0y7rnjEt7_6ZBvmCuUt6Axyg=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/052b06c4307e854914469ba081f740e8.gif" title="Dat Ve May Bay 247, Đại Lý Vé Máy Bay Giá Rẻ Hàng Đầu VeBay247.vn" class="CToWUd">
+                  <img align="absmiddle" width="49px" height="29px" src="https://ci4.googleusercontent.com/proxy/aQNnWDrxj5KSym_PdaFJdUMD2FPEtQyz_ciFfMAVsJzCLLuQBjzYdSt-mdWLo8MMMFjzoOs2SAi9T2JVFHrSMSCbOvlgYQJ4cZHiyYxPuCcb9u0y7rnjEt7_6ZBvmCuUt6Axyg=s0-d-e1-ft#${printDatachuyenbay(ketqua.rows, "di").airline === "Vietjet" ? logoVietjet : printDatachuyenbay(ketqua.rows, "di").airline === "Jetstar" ? logoJetstar : logoVietnamairline}" title="" class="CToWUd">
               </td>
               <td valign="top" style="padding-bottom:10px">
                   <p>
-                      Từ: <b>Thành Phố Hồ Chí Minh </b>(SGN)<br>
+                      Từ: <b>${printDatachuyenbay(ketqua.rows, "di").depcode}</b><br>
                   </p>
                   <p>
-                      <b>20:10</b>, 28/10/2018            </p>
+                     Lúc: <b>${printDatachuyenbay(ketqua.rows, "di").deptime}</b>           </p>
             </td>
             <td valign="top" style="padding-bottom:10px">
                 <p>
-                    tới: <b>Hà Nội </b>(HAN)
+                    tới: <b>${printDatachuyenbay(ketqua.rows, "di").descode}</b>
                 </p>
                 <p>
-                  <b>22:15</b>, 28/10/2018        	</p>
+                Lúc: <b>${printDatachuyenbay(ketqua.rows, "di").destime}</b></p>
             </td>
             <td>
                 <table width="90%" cellpadding="0" cellspacing="0">
@@ -231,7 +263,7 @@ const sendMailNow = (iddonhang) => {
                           <td style="text-align:right">
                           </td>
                           <td style="line-height:18px;padding:0">
-                              JetStar <br> (<b>BL784</b>)
+                              ${printDatachuyenbay(ketqua.rows, "di").airline} <br> 
                               <br>
                               <span>
                                                     </span></td>
@@ -248,59 +280,59 @@ const sendMailNow = (iddonhang) => {
         </tr>
         <tr>
           </tr>
-              <tr class="m_3633905849909431137flight-sum m_3633905849909431137InBound">
-              <td class="m_3633905849909431137logo-flight">
-                  <img align="absmiddle" width="49px" height="29px" src="https://ci6.googleusercontent.com/proxy/S5EzhU9k8_cF3gw9ZaikG09P62fTeZ9biqCLak7c3080nexGSKoUWwtQohDlpLO6aWhSeUhLQMdSzXIiROhMkiggR32eZCa7iTw_=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/InBound.png" alt="Dat Ve May Bay 247, Đại Lý Vé Máy Bay Giá Rẻ Hàng Đầu VeBay247.vn" class="CToWUd">
-              </td>
-              <td>
-                Khởi hành từ <b>Hà Nội ,Việt Nam        	</b>
-              </td>
-              <td colspan="2" style="text-align:right;padding-right:10px">
-                  Thời gian: <b>2</b>
-              </td>
-          </tr>
-          <tr>
-            <td>
-                <img align="absmiddle" width="49px" height="29px" src="https://ci4.googleusercontent.com/proxy/aQNnWDrxj5KSym_PdaFJdUMD2FPEtQyz_ciFfMAVsJzCLLuQBjzYdSt-mdWLo8MMMFjzoOs2SAi9T2JVFHrSMSCbOvlgYQJ4cZHiyYxPuCcb9u0y7rnjEt7_6ZBvmCuUt6Axyg=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/052b06c4307e854914469ba081f740e8.gif" title="Dat Ve May Bay 247, Đại Lý Vé Máy Bay Giá Rẻ Hàng Đầu VeBay247.vn" class="CToWUd">
-            </td>
-            <td valign="top" style="padding-bottom:10px">
-                  <p>
-                      Từ: <b>Hà Nội </b>(HAN)<br>
-                  </p>
-                  <p>
-                      <b>09:40</b>, 28/10/2018            </p>
-            </td>
-            <td valign="top" style="padding-bottom:10px">
-                <p>
-                    tới: <b>Thành Phố Hồ Chí Minh </b>(SGN)
-                </p>
-                <p>
-                  <b>11:50</b>, 28/10/2018        	</p>
-            </td>
-            <td>
-                <table width="90%" cellpadding="0" cellspacing="0">
-                    <tbody>
-                      <tr>
-                          <td style="text-align:right">
-                          </td>
-                          <td style="line-height:18px;padding:0">
-                              JetStar <br> (<b>BL755</b>)
-                              <br>
-                              <span>
-                                                    </span></td>
-                      </tr>
-                      <tr>
-                              <td>
-                              </td>
-                          <td style="line-height:18px;padding:0">
-                          </td>
-                      </tr>
-                  </tbody>
-                  </table>
-            </td>
-          </tr>
-          <tr>
-              </tr>
+             ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ?
+            "" :
+            ` <tr class="m_3633905849909431137flight-sum m_3633905849909431137InBound">
+               <td class="m_3633905849909431137logo-flight">
+                   <img align="absmiddle" width="49px" height="29px" src="https://ci6.googleusercontent.com/proxy/S5EzhU9k8_cF3gw9ZaikG09P62fTeZ9biqCLak7c3080nexGSKoUWwtQohDlpLO6aWhSeUhLQMdSzXIiROhMkiggR32eZCa7iTw_=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/InBound.png" alt="" class="CToWUd">
+               </td>
+               <td>
+                   Khởi hành từ <b>${printDatachuyenbay(ketqua.rows, "khuhoi").depcode}</b>
+               </td>
+           </tr>
+           <tr>
+               <td>
+                   <img align="absmiddle" width="49px" height="29px" src="https://ci4.googleusercontent.com/proxy/aQNnWDrxj5KSym_PdaFJdUMD2FPEtQyz_ciFfMAVsJzCLLuQBjzYdSt-mdWLo8MMMFjzoOs2SAi9T2JVFHrSMSCbOvlgYQJ4cZHiyYxPuCcb9u0y7rnjEt7_6ZBvmCuUt6Axyg=s0-d-e1-ft#${printDatachuyenbay(ketqua.rows, "khuhoi").airline === "Vietjet" ? logoVietjet : printDatachuyenbay(ketqua.rows, "khuhoi").airline === "Jetstar" ? logoJetstar : logoVietnamairline}" title="" class="CToWUd">
+               </td>
+               <td valign="top" style="padding-bottom:10px">
+                   <p>
+                       Từ: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").depcode}</b><br>
+                   </p>
+                   <p>
+                   Lúc: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").deptime}</b>           </p>
+             </td>
+             <td valign="top" style="padding-bottom:10px">
+                 <p>
+                     tới: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").descode}</b>
+                 </p>
+                 <p>
+                 Lúc: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").destime}</b></p>
+             </td>
+             <td>
+                 <table width="90%" cellpadding="0" cellspacing="0">
+                     <tbody>
+                       <tr>
+                           <td style="text-align:right">
+                           </td>
+                           <td style="line-height:18px;padding:0">
+                               ${printDatachuyenbay(ketqua.rows, "khuhoi").airline} <br> 
+                               <br>
+                               <span>
+                                                     </span></td>
+                       </tr>
+                       <tr>
+                               <td>
+                               </td>
+                           <td style="line-height:18px;padding:0">
+                           </td>
+                       </tr>
+                   </tbody>
+                   </table>
+             </td>
+           </tr>
+           <tr>
+               </tr>`
+          }
         </tbody>
       
       </table>
@@ -316,7 +348,7 @@ const sendMailNow = (iddonhang) => {
       
             </tbody><tbody>
               <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Đơn hàng gồm: 2 Người lớn, 2 Trẻ Em, 2 Em Bé</span>
+                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Đơn hàng gồm: ${ketqua.rows[0].adult} Người lớn ${ketqua.rows[0].child !== "0" ? ", " + ketqua.rows[0].child + " Trẻ Em" : ""} ${ketqua.rows[0].inf !== "0" ? ", " + ketqua.rows[0].inf + " Em Bé" : ""}</span>
               </td></tr>              					
              </tbody>
       
@@ -326,66 +358,80 @@ const sendMailNow = (iddonhang) => {
       
             </tbody><tbody>
               <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - 2 Người lớn: 2 x (1,240,000 + 540,000) = 3,560,000</span>
+                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].adult} Người lớn: ${ketqua.rows[0].adult} x (${printDatachuyenbay(ketqua.rows, "di").baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "di").adult.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "di").adult.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
               </td></tr>              					
              </tbody>
-          
-          <tbody>
+          ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" :
+            `
+            <tbody>
               <tr></tr>
-                  <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - 2 Người lớn: 2 x (1,540,000 + 570,000) = 4,220,000</span>
-              
-          </td></tr></tbody>
+              <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].adult} Người lớn: ${ketqua.rows[0].adult} x (${printDatachuyenbay(ketqua.rows, "khuhoi").baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "khuhoi").adult.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "khuhoi").adult.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+
+              </td></tr></tbody>
+              `
+          }
+          
               
           <tbody>
               <tr>
-                 <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé đi và về - 2 Người lớn: 7,780,000</span>
+                 <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].adult} Người lớn: ${(printDatachuyenbay(ketqua.rows, "di").adult.total + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : printDatachuyenbay(ketqua.rows, "khuhoi").adult.total)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
               </td></tr>
           </tbody>
+          ${ketqua.rows[0].child === "0" ? "" :
+            `<tbody><tr class="m_3633905849909431137title">
+        <td><h2 class="m_3633905849909431137title_item" style="font-size:90%;text-align:left;color:BLACK;font-weight:bold">1.2.3. Trẻ Em</h2>
+        </td></tr>
+        
+              </tbody><tbody>
+                <tr>
+                    <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].child} Trẻ Em: ${ketqua.rows[0].child} x (${printDatachuyenbay(ketqua.rows, "di").child.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "di").child.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "di").child.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                </td></tr>              					
+               </tbody>
+            ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" :
+              `
+              <tbody>
+                <tr></tr>
+                <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].child} Trẻ Em: ${ketqua.rows[0].child} x (${printDatachuyenbay(ketqua.rows, "khuhoi").child.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "khuhoi").child.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "khuhoi").child.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+  
+                </td></tr></tbody>
+                `
+            }
+            
                 
-      <tbody><tr class="m_3633905849909431137title">
-      <td><h2 class="m_3633905849909431137title_item" style="font-size:90%;text-align:left;color:BLACK;font-weight:bold">1.2.3. Trẻ Em</h2>
-      </td></tr>
-      
-          </tbody><tbody>
-              <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - 2 Trẻ em: 2 x 1,780,000 = 3,560,000</span>
-              </td></tr>
-          </tbody>
-          
-             
-          <tbody>
-              <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - 2 Trẻ em: 2 x 2,110,000 = 4,220,000</span>
-              </td></tr>
-          </tbody>
-          
-          <tbody>
-              <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé đi và về - 2 Trẻ em: 7,780,000</span>
-              </td></tr>
-          </tbody>
-           
-               
-          
-          <tbody><tr class="m_3633905849909431137title">
-      <td><h2 class="m_3633905849909431137title_item" style="font-size:90%;text-align:left;color:BLACK;font-weight:bold">1.2.4. Em Bé</h2>
-      </td></tr>
-      
-          </tbody><tbody>
-              <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - 2 Em bé: 2 x 150,000 = 300,000</span>
-              </td></tr>
-          </tbody>
-          <tbody>
-              <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - 2 Em bé: 2 x 150,000 = 300,000</span>
-              </td></tr>
-          </tbody>
-          <tbody>
-              <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé đi và về - 2 Em bé: 600,000</span>
-              </td></tr>
-          </tbody>
+            <tbody>
+                <tr>
+                   <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].child} Trẻ Em: ${(printDatachuyenbay(ketqua.rows, "di").child.total + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : printDatachuyenbay(ketqua.rows, "khuhoi").child.total)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                </td></tr>
+            </tbody>`
+          }   
+
+          ${ketqua.rows[0].inf === "0" ? "" :
+            `<tbody><tr class="m_3633905849909431137title">
+        <td><h2 class="m_3633905849909431137title_item" style="font-size:90%;text-align:left;color:BLACK;font-weight:bold">1.2.4. Em bé</h2>
+        </td></tr>
+        
+              </tbody><tbody>
+                <tr>
+                    <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].inf} Em bé: ${ketqua.rows[0].inf} x (${printDatachuyenbay(ketqua.rows, "di").inf.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${parseInt(printDatachuyenbay(ketqua.rows, "di").inf.taxfee).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "di").inf.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                </td></tr>              					
+               </tbody>
+            ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" :
+              `
+              <tbody>
+                <tr></tr>
+                <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].inf} Em bé: ${ketqua.rows[0].inf} x (${printDatachuyenbay(ketqua.rows, "khuhoi").inf.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${parseInt(printDatachuyenbay(ketqua.rows, "khuhoi").inf.taxfee).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "khuhoi").inf.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+  
+                </td></tr></tbody>
+                `
+            }
+            
+                
+            <tbody>
+                <tr>
+                   <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].inf} Em bé: ${(printDatachuyenbay(ketqua.rows, "di").inf.total + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : printDatachuyenbay(ketqua.rows, "khuhoi").inf.total)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                </td></tr>
+            </tbody>`
+          }  
            
           
           <tbody><tr class="m_3633905849909431137title">
@@ -395,7 +441,7 @@ const sendMailNow = (iddonhang) => {
       
           </tbody><tbody>
               <tr>
-                  <td><span style="font-size:110%;text-align:left;color:purple;padding:7px 5px 5px 10px"><b>- Tổng đơn hàng chưa gồm hành lý: 16,160,000 VND</b></span>
+                  <td><span style="font-size:110%;text-align:left;color:purple;padding:7px 5px 5px 10px"><b>- Tổng đơn hàng chưa gồm hành lý: ${parseInt(ketqua.rows[0].subtotalorigin).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} VND</b></span>
               </td></tr>
           </tbody>
       
@@ -409,17 +455,13 @@ const sendMailNow = (iddonhang) => {
       
                 <ul>
       
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Ông</span><strong>dwqdwqdwq</strong></li>
+                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Họ và tên:</span><strong>${ketqua.rows[0].fullname}</strong></li>
       
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Email:</span><strong><a href="mailto:phutungxemayminhky@gmail.com" style="color:#00f;text-decoration:none" target="_blank">phutungxemayminhky@<wbr>gmail.com</a></strong></li>
+                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Email:</span><strong>${ketqua.rows[0].email}</strong></li>
       
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Số điện thoại:</span><strong>312312312312</strong></li>
-      
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Quốc gia</span><strong>wqdwq</strong></li>
-      
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Thành phố</span><strong>HCM</strong></li>
-      
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Địa chỉ</span><strong>123</strong></li>
+                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Số điện thoại:</span><strong>${ketqua.rows[0].phone}</strong></li>
+            
+                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Địa chỉ</span><strong>${ketqua.rows[0].address}</strong></li>
       
                   </ul>
       
@@ -431,53 +473,20 @@ const sendMailNow = (iddonhang) => {
       
           </div>
       
-          <ul>
-      
-          
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Trẻ Em Trai</span><strong>dwqdwq</strong>
-                                <span style="display:inline-block;padding-left:5px;font-style:italic;color:#333">(//)</span>
-      
-                              
-                      </li>
-      
-                  
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Ông</span><strong>dwqdwq</strong>
-                      </li>
-      
-                  
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Ông</span><strong>dqwdwq</strong>
-                      </li>
-      
-                  
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Em Bé Trai</span><strong>dqwdwq</strong>
-                                <span style="display:inline-block;padding-left:5px;font-style:italic;color:#333">(1/1/2016)</span>
-      
-                              
-                      </li>
-      
-                  
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Trẻ Em Trai</span><strong>dqwdwqd</strong>
-                                <span style="display:inline-block;padding-left:5px;font-style:italic;color:#333">(//)</span>
-      
-                              
-                      </li>
-      
-                  
-                    <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">Em Bé Trai</span><strong>wqdwqdwq</strong>
-                                <span style="display:inline-block;padding-left:5px;font-style:italic;color:#333">(1/1/2016)</span>
-      
-                              
-                      </li>
-      
-                  
-          </ul>
-      
-      
+          <ul>${
+
+          temparray.map((value, key) => {
+            if (value.loaichuyenbay === "di") {
+              return ` <li style="display:block;list-style:none;padding:3px"><span style="display:inline-block;width:100px">${value.quydanh === "ong" ? "Ông" : value.quydanh === "ba" ? "Bà" : value.quydanh === "anh" ? "Anh" : value.quydanh === "chi" ? "Chị" : value.quydanh === "betrai" ? "Bé trai" : "Bé gái"}</span><strong>${value.ho} ${value.tendemvaten}</strong>
+${value.quydanh === "betrai" || value.quydanh === "begai" ? `<span style="display:inline-block;padding-left:5px;font-style:italic;color:#333">(${value.ngaysinh})</span>` : ""}
+</li>`
+            }
+          })}</ul>
       <div style="font-size:100%;text-align:left;color:RED;padding:5px;font-weight:bold;margin:10px 0">
       3.1. YÊU CẦU ĐẶC BIỆT
       </div>
       
-          32132132131
+      ${ketqua.rows[0].yeucau}
           
       <div style="border:1px solid gray;background:whitesmoke;margin-top:10px;padding:10px;color:#fd5304;font-weight:bold">
                   Chúng tôi xin lưu ý với quý khách đây là yêu cầu đặt vé chứ chưa phải xác nhận về giá và chỗ.<br>
@@ -493,7 +502,7 @@ const sendMailNow = (iddonhang) => {
       <div>
       
             <p>
-        Trong tuần, Nhân viên Vébay247 sẽ đến tận nơi HCM hoặc Đà Nẵng tại địa chỉ của Quý khách yêu cầu để giao vé và thu tiền khi Quý khách có yêu cầu đặt vé . Với hình thức này, Quý khách sẽ chịu mức phí vận chuyển là 0 - 50.000 vnđ/1 lần giao.</p>		                Địa chỉ nhận vé: <b style="margin-left:10px;display:inline-block;font-weight:bold">fewfewfew</b>
+        Trong tuần, chúng tôi sẽ đến tận nơi HCM tại địa chỉ của Quý khách yêu cầu để giao vé và thu tiền khi Quý khách có yêu cầu đặt vé . Với hình thức này, Quý khách sẽ chịu mức phí vận chuyển là 0 - 50.000 vnđ/1 lần giao.</p>		                Địa chỉ nhận vé: <b style="margin-left:10px;display:inline-block;font-weight:bold">${ketqua.rows[0].address}</b>
                       
             <div style="clear:both"></div>
       
@@ -511,12 +520,12 @@ const sendMailNow = (iddonhang) => {
               <div style="padding:8px 10px;background-color:#f2f2f2;border:1px solid #0062a4;margin-bottom:10px">
                               Khi chuyển khoản, quý khách vui lòng nhập nội dung chuyển khoản là
                   <div style="padding:4px 0">
-                                  <b style="color:#fd5e14;font-weight:bold;font-style:italic;line-height:22px;font-size:16px">"MDH 927922143, dwqdwqdwq, Noi dung thanh toan"</b>
+                                  <b style="color:#fd5e14;font-weight:bold;font-style:italic;line-height:22px;font-size:16px">"MDH ${ketqua.rows[0].code}, ${xoa_dau(ketqua.rows[0].fullname)}, Noi dung thanh toan"</b>
                   </div>
                               VD: <br>
-                              "MDH 927922143, dwqdwqdwq, TT ve may bay"<br>
-                              "MDH 927922143, dwqdwqdwq, TT hanh ly ky gui"<br>
-                              "MDH 927922143, dwqdwqdwq, TT Chi phi phat sinh."<br>
+                              "MDH ${ketqua.rows[0].code}, ${xoa_dau(ketqua.rows[0].fullname)}, TT ve may bay"<br>
+                              "MDH ${ketqua.rows[0].code}, ${xoa_dau(ketqua.rows[0].fullname)}, TT hanh ly ky gui"<br>
+                              "MDH ${ketqua.rows[0].code}, ${xoa_dau(ketqua.rows[0].fullname)}, TT Chi phi phat sinh."<br>
                               <b>Ðể việc thanh toán được chính xác. Xin cảm ơn quý khách!</b>
               </div>
               
@@ -525,7 +534,7 @@ const sendMailNow = (iddonhang) => {
                                   <b>Ngay sau khi chuyển khoản thành công, xin vui lòng gọi lại ngay cho chúng tôi theo số:</b>
                                   <p>
                                       <b style="margin-right:10px">Hotline </b>
-                                      <b style="color:#fd5304;margin-right:20px">0934191404 - 02822163883</b>
+                                      <b style="color:#fd5304;margin-right:20px">0901.438.151 - 0866.598.443 - 0911.229.543 </b>
                                   </p>
                                   <em>* Để chúng tôi kiểm tra tài khoản và xuất vé cho quý khách</em><div class="yj6qo"></div><div class="adL">
                   </div></div><div class="adL">
@@ -727,11 +736,14 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
   var mangadult = req.body.mangadult;
   var mangchild = req.body.mangchild;
   var manginf = req.body.manginf;
+  var adultnumber = req.body.mangadult.length === 0 ? 0 : req.body.mangadult.length;
+  var childnumber = req.body.mangchild.length === 0 ? 0 : req.body.mangchild.length;
+  var infnumber = req.body.manginf.length === 0 ? 0 : req.body.manginf.length;
   var create_time = moment().format("DD-MM-YYYY HH:mm:ss");
   var ketquadiInsert = false;
   var ketquaKhuHoiInsert = false;
   var randomcode = makeidrandom();
-  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,hinhthucthanhtoan,subtotalorigin,subtotalwithhanhly,create_date,code) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + hinhthucthanhtoan + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "','" + randomcode + "') RETURNING id")
+  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,hinhthucthanhtoan,subtotalorigin,subtotalwithhanhly,create_date,code,adult,child,inf) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + hinhthucthanhtoan + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "','" + randomcode + "','" + adultnumber + "','" + childnumber + "','" + infnumber + "') RETURNING id")
     .then(result => {
       if (thongtinvedi !== null) {
         var param1 = [thongtinvedi, 'di', parseInt(result.rows[0].id)];
