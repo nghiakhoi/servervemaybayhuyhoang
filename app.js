@@ -909,6 +909,70 @@ app.post('/getallsanbay', cors(corsOptionsDelegate), function (req, res, next) {
     .catch(e => console.error(e.stack));
 });
 
+app.post('/getalltintuc', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  tintuc order by id desc limit 50")
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getalldanhmuc', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  danhmuctintuc")
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res, next) {
+  var iddanhmuc = req.body.iddanhmuc;
+  pool.query("SELECT * FROM  tintuc where iddanhmuc=$1 order by id desc limit 50", [iddanhmuc])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
