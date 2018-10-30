@@ -973,6 +973,9 @@ app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res
     .catch(e => console.error(e.stack));
 });
 
+app.get('/', (req, res) => {
+  res.send('YOUR EXPRESS BACKEND IS CONNECTED TO REACT');
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
