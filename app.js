@@ -590,9 +590,9 @@ app.post('/vn', cors(corsOptionsDelegate), function (req, res, next) {
   var des = req.body.des;
   var datedep = req.body.datedep;
   var depdate = req.body.depdate;
-  var adult = req.body.adult;
-  var child = req.body.child;
-  var inf = req.body.inf;
+  var adult = req.body.adult === null ? '0' : req.body.adult;
+  var child = req.body.child === null ? '0' : req.body.child;
+  var inf = req.body.inf === null ? '0' : req.body.inf;
   var options = {
     method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
@@ -634,9 +634,9 @@ app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
   var des = req.body.des;
   var datedep = req.body.datedep;
   var datedes = req.body.datedes;
-  var adult = req.body.adult;
-  var child = req.body.child;
-  var inf = req.body.inf;
+  var adult = req.body.adult === null ? '0' : req.body.adult;
+  var child = req.body.child === null ? '0' : req.body.child;
+  var inf = req.body.inf === null ? '0' : req.body.inf;
 
   var options = {
     method: 'POST',
@@ -680,9 +680,9 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
   var des = req.body.des;
   var datedep = req.body.datedep;
   var datedes = req.body.datedes;
-  var adult = req.body.adult;
-  var child = req.body.child;
-  var inf = req.body.inf;
+  var adult = req.body.adult === null ? '0' : req.body.adult;
+  var child = req.body.child === null ? '0' : req.body.child;
+  var inf = req.body.inf === null ? '0' : req.body.inf;
   var options = {
     method: 'POST',
     url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
@@ -713,6 +713,8 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
 
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
+    console.log("vietjet");
+    console.log(body);
     res.send(body);
   });
 
@@ -910,7 +912,30 @@ app.post('/getallsanbay', cors(corsOptionsDelegate), function (req, res, next) {
 });
 
 app.post('/getalltintuc', cors(corsOptionsDelegate), function (req, res, next) {
-  pool.query("SELECT * FROM  tintuc order by id desc limit 50")
+  var limit = req.body.limit;
+  pool.query("SELECT * FROM  tintuc order by id desc limit $1", [limit])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getalltinkhuyenmai', cors(corsOptionsDelegate), function (req, res, next) {
+  var limit = req.body.limit;
+  pool.query("SELECT * FROM  tinkhuyenmai order by id desc limit $1", [limit])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
