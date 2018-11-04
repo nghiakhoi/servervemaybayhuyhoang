@@ -730,7 +730,7 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
   var address = req.body.address;
   var email = req.body.email;
   var yeucau = req.body.yeucau;
-  var hinhthucthanhtoan = req.body.hinhthucthanhtoan === "chuyenkhoan" ? req.body.nganhangchoosed : req.body.hinhthucthanhtoan;
+  //var hinhthucthanhtoan = req.body.hinhthucthanhtoan === "chuyenkhoan" ? req.body.nganhangchoosed : req.body.hinhthucthanhtoan;
   var subtotaloriginal = req.body.subtotaloriginal;
   var subtotalwithhanhly = req.body.subtotalwithhanhly;
   var thongtinvedi = req.body.thongtinvedi ? JSON.stringify(req.body.thongtinvedi) : "";
@@ -745,7 +745,7 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
   var ketquadiInsert = false;
   var ketquaKhuHoiInsert = false;
   var randomcode = makeidrandom();
-  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,hinhthucthanhtoan,subtotalorigin,subtotalwithhanhly,create_date,code,adult,child,inf) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + hinhthucthanhtoan + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "','" + randomcode + "','" + adultnumber + "','" + childnumber + "','" + infnumber + "') RETURNING id")
+  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,subtotalorigin,subtotalwithhanhly,create_date,code,adult,child,inf) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "','" + randomcode + "','" + adultnumber + "','" + childnumber + "','" + infnumber + "') RETURNING id")
     .then(result => {
       if (thongtinvedi !== null) {
         var param1 = [thongtinvedi, 'di', parseInt(result.rows[0].id)];
