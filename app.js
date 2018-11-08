@@ -103,7 +103,6 @@ const sendMailNow = (iddonhang) => {
   var temparray = [];
   pool.query("SELECT * FROM  donhang INNER JOIN chuyenbay ON chuyenbay.iddonhang = donhang.id INNER JOIN hanhkhach ON hanhkhach.idchuyenbay = chuyenbay.id where donhang.id=$1 order by loaihanhkhach", [iddonhang])
     .then(ketqua => {
-      console.log(ketqua.rows);
       ketqua.rows.map((value, key) => {
         if (value.loaichuyenbay === "di") {
           temparray.push(value);
@@ -240,7 +239,7 @@ const sendMailNow = (iddonhang) => {
                   <img align="absmiddle" width="49px" height="29px" src="https://ci5.googleusercontent.com/proxy/Z-hkTrUUzPB5IqBeyQhWVLD1g6unI6FaO4_cGtO8i516l53yT5eRTeVQXaHAHCs_USzg7K-xOTsZ2j95EoXrYdqPpnMTgzztWI0_sQ=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/OutBound.png" alt="" class="CToWUd">
               </td>
               <td>
-                  Khởi hành từ <b>${printDatachuyenbay(ketqua.rows, "di").depcode}</b>
+                  Khởi hành từ <b>${ketqua.rows[0].depfull} (${ketqua.rows[0].depcode})</b>
               </td>
           </tr>
           <tr>
@@ -249,14 +248,14 @@ const sendMailNow = (iddonhang) => {
               </td>
               <td valign="top" style="padding-bottom:10px">
                   <p>
-                      Từ: <b>${printDatachuyenbay(ketqua.rows, "di").depcode}</b><br>
+                      Từ: <b>${ketqua.rows[0].depfull} (${ketqua.rows[0].depcode})</b><br>
                   </p>
                   <p>
                      Lúc: <b>${printDatachuyenbay(ketqua.rows, "di").deptime}</b>           </p>
             </td>
             <td valign="top" style="padding-bottom:10px">
                 <p>
-                    tới: <b>${printDatachuyenbay(ketqua.rows, "di").descode}</b>
+                    tới: <b>${ketqua.rows[0].desfull} (${ketqua.rows[0].descode})</b>
                 </p>
                 <p>
                 Lúc: <b>${printDatachuyenbay(ketqua.rows, "di").destime}</b></p>
@@ -292,7 +291,7 @@ const sendMailNow = (iddonhang) => {
                    <img align="absmiddle" width="49px" height="29px" src="https://ci6.googleusercontent.com/proxy/S5EzhU9k8_cF3gw9ZaikG09P62fTeZ9biqCLak7c3080nexGSKoUWwtQohDlpLO6aWhSeUhLQMdSzXIiROhMkiggR32eZCa7iTw_=s0-d-e1-ft#https://vebay247.vn/public/uploads/images/InBound.png" alt="" class="CToWUd">
                </td>
                <td>
-                   Khởi hành từ <b>${printDatachuyenbay(ketqua.rows, "khuhoi").depcode}</b>
+                   Khởi hành từ <b>${ketqua.rows[0].desfull} (${ketqua.rows[0].descode})</b>
                </td>
            </tr>
            <tr>
@@ -301,14 +300,14 @@ const sendMailNow = (iddonhang) => {
                </td>
                <td valign="top" style="padding-bottom:10px">
                    <p>
-                       Từ: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").depcode}</b><br>
+                       Từ: <b>${ketqua.rows[0].desfull} (${ketqua.rows[0].descode})</b><br>
                    </p>
                    <p>
                    Lúc: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").deptime}</b>           </p>
              </td>
              <td valign="top" style="padding-bottom:10px">
                  <p>
-                     tới: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").descode}</b>
+                     tới: <b>${ketqua.rows[0].depfull} (${ketqua.rows[0].depcode})</b>
                  </p>
                  <p>
                  Lúc: <b>${printDatachuyenbay(ketqua.rows, "khuhoi").destime}</b></p>
@@ -718,8 +717,6 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
 
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
-    console.log("vietjet");
-    console.log(body);
     res.send(body);
   });
 
@@ -735,6 +732,10 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
   var address = req.body.address;
   var email = req.body.email;
   var yeucau = req.body.yeucau;
+  var depcode = req.body.depcode;
+  var descode = req.body.descode;
+  var depfull = req.body.depfull;
+  var desfull = req.body.desfull;
   //var hinhthucthanhtoan = req.body.hinhthucthanhtoan === "chuyenkhoan" ? req.body.nganhangchoosed : req.body.hinhthucthanhtoan;
   var subtotaloriginal = req.body.subtotaloriginal;
   var subtotalwithhanhly = req.body.subtotalwithhanhly;
@@ -750,7 +751,7 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
   var ketquadiInsert = false;
   var ketquaKhuHoiInsert = false;
   var randomcode = makeidrandom();
-  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,subtotalorigin,subtotalwithhanhly,create_date,code,adult,child,inf) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "','" + randomcode + "','" + adultnumber + "','" + childnumber + "','" + infnumber + "') RETURNING id")
+  pool.query("INSERT INTO donhang (fullname,phone,address,email,yeucau,subtotalorigin,subtotalwithhanhly,create_date,code,adult,child,inf,depcode,descode,depfull,desfull) VALUES ('" + fullname + "', '" + phone + "','" + address + "','" + email + "','" + yeucau + "','" + subtotaloriginal + "','" + subtotalwithhanhly + "','" + create_time + "','" + randomcode + "','" + adultnumber + "','" + childnumber + "','" + infnumber + "','" + depcode + "','" + descode + "','" + depfull + "','" + desfull + "') RETURNING id")
     .then(result => {
       if (thongtinvedi !== null) {
         var param1 = [thongtinvedi, 'di', parseInt(result.rows[0].id)];
@@ -820,9 +821,6 @@ app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
       }
       return result;
     }).then(result => {
-      setTimeout(function () {
-        sendMailNow(result.rows[0].id)
-      }, 10000);
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({ result: "ok", id: result.rows[0].id }, null, 3));
     })
@@ -887,6 +885,32 @@ app.post('/editstatusinvoicebyid', cors(corsOptionsDelegate), function (req, res
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({ result: "fail" }, null, 3));
       } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/updatehinhthucthanhtoan', cors(corsOptionsDelegate), function (req, res, next) {
+  var iddonhang = req.body.iddonhang;
+  var hinhthucthanhtoan = req.body.hinhthucthanhtoan;
+  pool.query("UPDATE donhang SET hinhthucthanhtoan = $1 WHERE id=$2 RETURNING id", [hinhthucthanhtoan, iddonhang])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        setTimeout(function () {
+          sendMailNow(result.rows[0].id)
+        }, 5000);
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
       }
@@ -1005,6 +1029,28 @@ app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res
 
 app.post('/getallhanhly', cors(corsOptionsDelegate), function (req, res, next) {
   pool.query("SELECT * FROM  hanhly")
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getsanbayByCode', cors(corsOptionsDelegate), function (req, res, next) {
+  var code = req.body.code;
+  pool.query("SELECT * FROM  sanbay where code=$1", [code])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
