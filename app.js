@@ -15,7 +15,12 @@ var logoVietjet = "https://vebay247.vn/public/uploads/images/03c30d49e4bcdcdbcc6
 var logoJetstar = "https://vebay247.vn/public/uploads/images/052b06c4307e854914469ba081f740e8.gif";
 var logoVietnamairline = "https://vebay247.vn/public/uploads/images/68f42eb9ea2a79d8a5fa9f15a2a50306.gif";
 
-var tienloigiave = 50000;
+var priceAdultOrigin = 65000;
+var priceChildOrigin = 65000;
+var priceInfOrigin = 40000;
+var priceAdult = 50000;
+var priceChild = 50000;
+var priceInf = 40000;
 
 var app = express();
 
@@ -358,14 +363,14 @@ const sendMailNow = (iddonhang) => {
       
             </tbody><tbody>
               <tr>
-                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].adult} Người lớn: ${ketqua.rows[0].adult} x (${printDatachuyenbay(ketqua.rows, "di").baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "di").adult.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "di").adult.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                  <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].adult} Người lớn: ${ketqua.rows[0].adult} x (${printDatachuyenbay(ketqua.rows, "di").baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${(printDatachuyenbay(ketqua.rows, "di").adult.taxfee - (priceAdultOrigin) + (priceAdult)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${(((printDatachuyenbay(ketqua.rows, "di").adult.taxfee - (priceAdultOrigin) + (priceAdult)) + printDatachuyenbay(ketqua.rows, "di").baseprice) * ketqua.rows[0].adult).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
               </td></tr>              					
              </tbody>
           ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" :
             `
             <tbody>
               <tr></tr>
-              <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].adult} Người lớn: ${ketqua.rows[0].adult} x (${printDatachuyenbay(ketqua.rows, "khuhoi").baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "khuhoi").adult.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "khuhoi").adult.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+              <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].adult} Người lớn: ${ketqua.rows[0].adult} x (${printDatachuyenbay(ketqua.rows, "khuhoi").baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${(printDatachuyenbay(ketqua.rows, "khuhoi").adult.taxfee - (priceAdultOrigin) + (priceAdult)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${(((printDatachuyenbay(ketqua.rows, "khuhoi").adult.taxfee - (priceAdultOrigin) + (priceAdult)) + printDatachuyenbay(ketqua.rows, "khuhoi").baseprice) * ketqua.rows[0].adult).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
 
               </td></tr></tbody>
               `
@@ -374,7 +379,7 @@ const sendMailNow = (iddonhang) => {
               
           <tbody>
               <tr>
-                 <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].adult} Người lớn: ${(printDatachuyenbay(ketqua.rows, "di").adult.total + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : printDatachuyenbay(ketqua.rows, "khuhoi").adult.total)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                 <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].adult} Người lớn: ${((((printDatachuyenbay(ketqua.rows, "di").adult.taxfee - (priceAdultOrigin) + (priceAdult)) + printDatachuyenbay(ketqua.rows, "di").baseprice) * ketqua.rows[0].adult) + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : (((printDatachuyenbay(ketqua.rows, "khuhoi").adult.taxfee - (priceAdultOrigin) + (priceAdult)) + printDatachuyenbay(ketqua.rows, "khuhoi").baseprice) * ketqua.rows[0].adult))).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
               </td></tr>
           </tbody>
           ${ketqua.rows[0].child === "0" ? "" :
@@ -384,14 +389,14 @@ const sendMailNow = (iddonhang) => {
         
               </tbody><tbody>
                 <tr>
-                    <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].child} Trẻ Em: ${ketqua.rows[0].child} x (${printDatachuyenbay(ketqua.rows, "di").child.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "di").child.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "di").child.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                    <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].child} Trẻ Em: ${ketqua.rows[0].child} x (${printDatachuyenbay(ketqua.rows, "di").child.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${(printDatachuyenbay(ketqua.rows, "di").child.taxfee - (priceChildOrigin) + (priceChild)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${(((printDatachuyenbay(ketqua.rows, "di").child.taxfee - (priceChildOrigin) + (priceChild)) + printDatachuyenbay(ketqua.rows, "di").child.baseprice) * ketqua.rows[0].child).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
                 </td></tr>              					
                </tbody>
             ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" :
               `
               <tbody>
                 <tr></tr>
-                <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].child} Trẻ Em: ${ketqua.rows[0].child} x (${printDatachuyenbay(ketqua.rows, "khuhoi").child.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${printDatachuyenbay(ketqua.rows, "khuhoi").child.taxfee.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "khuhoi").child.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].child} Trẻ Em: ${ketqua.rows[0].child} x (${printDatachuyenbay(ketqua.rows, "khuhoi").child.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${(printDatachuyenbay(ketqua.rows, "khuhoi").child.taxfee - (priceChildOrigin) + (priceChild)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${(((printDatachuyenbay(ketqua.rows, "khuhoi").child.taxfee - (priceChildOrigin) + (priceChild)) + printDatachuyenbay(ketqua.rows, "khuhoi").child.baseprice) * ketqua.rows[0].child).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
   
                 </td></tr></tbody>
                 `
@@ -400,7 +405,7 @@ const sendMailNow = (iddonhang) => {
                 
             <tbody>
                 <tr>
-                   <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].child} Trẻ Em: ${(printDatachuyenbay(ketqua.rows, "di").child.total + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : printDatachuyenbay(ketqua.rows, "khuhoi").child.total)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                   <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].child} Trẻ Em: ${((((printDatachuyenbay(ketqua.rows, "di").child.taxfee - (priceChildOrigin) + (priceChild)) + printDatachuyenbay(ketqua.rows, "di").child.baseprice) * ketqua.rows[0].child) + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : (((printDatachuyenbay(ketqua.rows, "khuhoi").child.taxfee - (priceChildOrigin) + (priceChild)) + printDatachuyenbay(ketqua.rows, "khuhoi").child.baseprice) * ketqua.rows[0].child))).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
                 </td></tr>
             </tbody>`
           }   
@@ -412,14 +417,14 @@ const sendMailNow = (iddonhang) => {
         
               </tbody><tbody>
                 <tr>
-                    <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].inf} Em bé: ${ketqua.rows[0].inf} x (${printDatachuyenbay(ketqua.rows, "di").inf.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${parseInt(printDatachuyenbay(ketqua.rows, "di").inf.taxfee).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "di").inf.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                    <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều đi - ${ketqua.rows[0].inf} Em bé: ${ketqua.rows[0].inf} x (${printDatachuyenbay(ketqua.rows, "di").inf.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${(parseInt(printDatachuyenbay(ketqua.rows, "di").inf.taxfee) - (priceInfOrigin) + (priceInf)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${(((parseInt(printDatachuyenbay(ketqua.rows, "di").inf.taxfee) - (priceInfOrigin) + (priceInf)) + printDatachuyenbay(ketqua.rows, "di").inf.baseprice) * ketqua.rows[0].inf).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
                 </td></tr>              					
                </tbody>
             ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" :
               `
               <tbody>
                 <tr></tr>
-                <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].inf} Em bé: ${ketqua.rows[0].inf} x (${printDatachuyenbay(ketqua.rows, "khuhoi").inf.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${parseInt(printDatachuyenbay(ketqua.rows, "khuhoi").inf.taxfee).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${printDatachuyenbay(ketqua.rows, "khuhoi").inf.total.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                <tr><td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Giá vé chiều về - ${ketqua.rows[0].inf} Em bé: ${ketqua.rows[0].inf} x (${printDatachuyenbay(ketqua.rows, "khuhoi").inf.baseprice.toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)} + ${(parseInt(printDatachuyenbay(ketqua.rows, "khuhoi").inf.taxfee) - (priceInfOrigin) + (priceInf)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}) = ${(((parseInt(printDatachuyenbay(ketqua.rows, "khuhoi").inf.taxfee) - (priceInfOrigin) + (priceInf)) + printDatachuyenbay(ketqua.rows, "khuhoi").inf.baseprice) * ketqua.rows[0].inf).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
   
                 </td></tr></tbody>
                 `
@@ -428,7 +433,7 @@ const sendMailNow = (iddonhang) => {
                 
             <tbody>
                 <tr>
-                   <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].inf} Em bé: ${(printDatachuyenbay(ketqua.rows, "di").inf.total + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : printDatachuyenbay(ketqua.rows, "khuhoi").inf.total)).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
+                   <td><span style="font-size:110%;text-align:left;color:black;padding:7px 5px 5px 10px">- Tổng Giá vé đi ${printDatachuyenbay(ketqua.rows, "khuhoi") === null ? "" : "và về"}  - ${ketqua.rows[0].inf} Em bé: ${(((((parseInt(printDatachuyenbay(ketqua.rows, "di").inf.taxfee) - (priceInfOrigin) + (priceInf)) + printDatachuyenbay(ketqua.rows, "di").inf.baseprice) * ketqua.rows[0].inf) + (printDatachuyenbay(ketqua.rows, "khuhoi") === null ? 0 : (((printDatachuyenbay(ketqua.rows, "khuhoi").inf.taxfee - (priceInfOrigin) + (priceInf)) + printDatachuyenbay(ketqua.rows, "khuhoi").inf.baseprice) * ketqua.rows[0].inf)))).toFixed(1).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.").slice(0, -2)}</span>
                 </td></tr>
             </tbody>`
           }  
@@ -979,6 +984,27 @@ app.post('/getalldanhmuc', cors(corsOptionsDelegate), function (req, res, next) 
 app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res, next) {
   var iddanhmuc = req.body.iddanhmuc;
   pool.query("SELECT * FROM  tintuc where iddanhmuc=$1 order by id desc limit 50", [iddanhmuc])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getallhanhly', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  hanhly")
     .then(result => {
       if (result.rows.length === 0) {
         return false;
