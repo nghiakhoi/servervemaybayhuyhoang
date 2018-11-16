@@ -2,10 +2,16 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var logger = require('morgan');
 const { Pool, Client } = require('pg');
 var moment = require('moment');
 var nodemailer = require('nodemailer');
+var jwt = require('jsonwebtoken');
+var secret = "nghiakhoi.com";
+const bcrypt = require('bcrypt');
+
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -29,8 +35,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '5000mb' }));
+app.use(bodyParser.urlencoded({ limit: '5000mb', extended: true, parameterLimit: 50000 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -80,6 +86,24 @@ const printDatachuyenbay = (arraydata, loaichuyenbay) => {
   return findFirstItem;
 }
 
+function ChangeToSlug(str) {
+  str = str.replace(/^\s+|\s+$/g, ''); // trim
+  str = str.toLowerCase();
+
+  // remove accents, swap ñ for n, etc
+  var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+  var to = "aaaaeeeeiiiioooouuuunc------";
+  for (var i = 0, l = from.length; i < l; i++) {
+    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+  }
+
+  str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+    .replace(/\s+/g, '-') // collapse whitespace and replace by -
+    .replace(/-+/g, '-'); // collapse dashes
+
+  return str;
+}
+
 const xoa_dau = (str) => {
   str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
   str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
@@ -101,6 +125,7 @@ const xoa_dau = (str) => {
 const sendMailNow = (iddonhang) => {
   var iddonhang = iddonhang;
   var temparray = [];
+  console.log(iddonhang);
   pool.query("SELECT * FROM  donhang INNER JOIN chuyenbay ON chuyenbay.iddonhang = donhang.id INNER JOIN hanhkhach ON hanhkhach.idchuyenbay = chuyenbay.id where donhang.id=$1 order by loaihanhkhach", [iddonhang])
     .then(ketqua => {
       ketqua.rows.map((value, key) => {
@@ -723,8 +748,6 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
 });
 
 app.post('/infobooking', cors(corsOptionsDelegate), function (req, res, next) {
-
-
   var thongtinvedi = req.body.thongtinvedi;
   var thongtinveKhuHoi = req.body.thongtinveKhuHoi;
   var fullname = req.body.fullname;
@@ -1048,6 +1071,27 @@ app.post('/getallhanhly', cors(corsOptionsDelegate), function (req, res, next) {
     .catch(e => console.error(e.stack));
 });
 
+app.post('/getallinfomoney', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  settingmoney")
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
 app.post('/getsanbayByCode', cors(corsOptionsDelegate), function (req, res, next) {
   var code = req.body.code;
   pool.query("SELECT * FROM  sanbay where code=$1", [code])
@@ -1066,6 +1110,88 @@ app.post('/getsanbayByCode', cors(corsOptionsDelegate), function (req, res, next
         res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
       }
 
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/userlogin', (req, res) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  pool.query("SELECT * FROM  admin where username=$1", [username])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.json({ status: "fail" });
+      } else {
+        if (result.rows[0]['password'] === password) {
+          var token = jwt.sign({
+            username: result.rows[0]['username']
+          }, secret);
+          res.setHeader('Content-Type', 'application/json');
+          res.json({ status: true, token: token, data: { result: { username: result.rows[0]['username'] } } });
+        } else {
+          res.setHeader('Content-Type', 'application/json');
+          res.json({ status: "fail" });
+        }
+      }
+    })
+
+});
+
+app.post('/checktoken', (req, res) => {
+  var token = req.body.token;
+  if (token) {
+    jwt.verify(token, secret, function (err, decoded) {
+      if (err) {
+        res.setHeader('Content-Type', 'application/json');
+        res.json({ status: "fail" });
+      } else {
+        var username = decoded.username;
+        pool.query("SELECT * FROM  admin where username=$1", [username])
+          .then(result => {
+            if (result.rows.length === 0) {
+              return false;
+            } else {
+              return result;
+            }
+          }).then(result => {
+            if (result === false) {
+              res.setHeader('Content-Type', 'application/json');
+              res.json({ status: "fail" });
+            } else {
+              res.setHeader('Content-Type', 'application/json');
+              res.json({ status: true, token: token, data: { result: { username: result.rows[0]['username'] } } });
+            }
+          })
+      }
+    })
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ status: "fail" });
+  }
+});
+
+app.post('/addtintuc', cors(corsOptionsDelegate), function (req, res, next) {
+  var tieude = req.body.tieude;
+  var des = req.body.des;
+  var noidung = req.body.contentStateNoiDung;
+  var motangan = req.body.contentStateTomTat;
+  var keyword = req.body.keyword;
+  var danhmuc = req.body.danhmuc;
+  var hinhdaidien = req.body.hinhdaidien;
+  var slug = ChangeToSlug(req.body.tieude);
+  pool.query("INSERT INTO tintuc (tieude,slug,noidung,hinhdaidien,iddanhmuc,motangan,des,keyword) VALUES ('" + tieude + "', '" + slug + "','" + noidung + "','" + hinhdaidien + "','" + danhmuc + "','" + motangan + "','" + des + "','" + keyword + "')")
+    .then(result => {
+      return result;
+    }).then(result => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ result: "ok" }, null, 3));
     })
     .catch(e => console.error(e.stack));
 });
