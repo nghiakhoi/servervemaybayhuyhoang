@@ -651,7 +651,9 @@ app.post('/vn', cors(corsOptionsDelegate), function (req, res, next) {
   };
 
   request(options, function (error, response, body) {
-    if (error) throw new Error(error);
+    if (error) {
+      console.log(error)
+    };
     res.send(body);
   });
 });
@@ -696,7 +698,9 @@ app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
   };
 
   request(options, function (error, response, body) {
-    if (error) throw new Error(error);
+    if (error) {
+      console.log(error)
+    };
     res.send(body);
   });
 
@@ -741,7 +745,9 @@ app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
   };
 
   request(options, function (error, response, body) {
-    if (error) throw new Error(error);
+    if (error) {
+      console.log(error)
+    };
     res.send(body);
   });
 
@@ -896,7 +902,7 @@ app.post('/getinvoicebyid', cors(corsOptionsDelegate), function (req, res, next)
 app.post('/editstatusinvoicebyid', cors(corsOptionsDelegate), function (req, res, next) {
   var iddonhang = req.body.id;
   var status = req.body.status;
-  pool.query("UPDATE donhang SET status = $1 WHERE id=$2;", [status, iddonhang])
+  pool.query("UPDATE donhang SET status = $1 WHERE id=$2", [status, iddonhang])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
@@ -965,7 +971,7 @@ app.post('/getallsanbay', cors(corsOptionsDelegate), function (req, res, next) {
 
 app.post('/getalltintuc', cors(corsOptionsDelegate), function (req, res, next) {
   var limit = req.body.limit;
-  pool.query("SELECT * FROM  tintuc order by id desc limit $1", [limit])
+  pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc order by tintuc.id desc limit $1", [limit])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
@@ -1050,6 +1056,28 @@ app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res
     .catch(e => console.error(e.stack));
 });
 
+app.post('/getalltintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var id = req.body.id;
+  pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc where tintuc.id=$1", [id])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
 app.post('/getallhanhly', cors(corsOptionsDelegate), function (req, res, next) {
   pool.query("SELECT * FROM  hanhly")
     .then(result => {
@@ -1114,7 +1142,7 @@ app.post('/getsanbayByCode', cors(corsOptionsDelegate), function (req, res, next
     .catch(e => console.error(e.stack));
 });
 
-app.post('/userlogin', (req, res) => {
+app.post('/userlogin', cors(corsOptionsDelegate), (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
   pool.query("SELECT * FROM  admin where username=$1", [username])
@@ -1144,7 +1172,7 @@ app.post('/userlogin', (req, res) => {
 
 });
 
-app.post('/checktoken', (req, res) => {
+app.post('/checktoken', cors(corsOptionsDelegate), (req, res) => {
   var token = req.body.token;
   if (token) {
     jwt.verify(token, secret, function (err, decoded) {
@@ -1192,6 +1220,58 @@ app.post('/addtintuc', cors(corsOptionsDelegate), function (req, res, next) {
     }).then(result => {
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({ result: "ok" }, null, 3));
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/edittintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var idtintuc = req.body.idtintuc;
+  var tieude = req.body.tieude;
+  var des = req.body.des;
+  var noidung = req.body.contentStateNoiDung;
+  var motangan = req.body.contentStateTomTat;
+  var keyword = req.body.keyword;
+  var danhmuc = req.body.danhmuc;
+  var hinhdaidien = req.body.hinhdaidien;
+  var slug = ChangeToSlug(req.body.tieude);
+  pool.query("UPDATE tintuc SET tieude = $1,des = $2,noidung = $3,motangan = $4,keyword = $5,iddanhmuc = $6,hinhdaidien = $7,slug = $8  WHERE id=$9 RETURNING id", [tieude, des, noidung, motangan, keyword, danhmuc, hinhdaidien, slug, idtintuc])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/deletetintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var idtintuc = req.body.idtintuc;
+  pool.query("DELETE FROM tintuc WHERE id=$1 RETURNING id", [idtintuc])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
     })
     .catch(e => console.error(e.stack));
 });
