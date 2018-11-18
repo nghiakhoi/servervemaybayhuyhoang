@@ -1099,27 +1099,6 @@ app.post('/getallhanhly', cors(corsOptionsDelegate), function (req, res, next) {
     .catch(e => console.error(e.stack));
 });
 
-app.post('/getallinfomoney', cors(corsOptionsDelegate), function (req, res, next) {
-  pool.query("SELECT * FROM  settingmoney")
-    .then(result => {
-      if (result.rows.length === 0) {
-        return false;
-      } else {
-        return result;
-      }
-    }).then(result => {
-      if (result === false) {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ result: "fail" }, null, 3));
-      } else {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
-      }
-
-    })
-    .catch(e => console.error(e.stack));
-});
-
 app.post('/getsanbayByCode', cors(corsOptionsDelegate), function (req, res, next) {
   var code = req.body.code;
   pool.query("SELECT * FROM  sanbay where code=$1", [code])
