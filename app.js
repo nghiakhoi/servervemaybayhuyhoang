@@ -586,14 +586,9 @@ ${value.quydanh === "betrai" || value.quydanh === "begai" ? `<span style="displa
 }
 
 
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-
 var cors = require('cors');
 app.options('*', cors());
-var whitelist = ['http://vemaybayhuyhoang.ga', 'http://localhost:3000'];
+var whitelist = ['http://vemaybayhuyhoang.ga', 'http://localhost:3000', 'http://cashcollectionserver.com'];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (whitelist.indexOf(req.header('Origin')) !== -1) {
