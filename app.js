@@ -588,7 +588,7 @@ ${value.quydanh === "betrai" || value.quydanh === "begai" ? `<span style="displa
 
 var cors = require('cors');
 app.options('*', cors());
-var whitelist = ['http://vemaybayhuyhoang.ga', 'http://localhost:3000', 'http://cashcollectionserver.com'];
+var whitelist = ['http://vemaybayhuyhoang.ga', 'http://localhost:3000', 'http://vemaybayhuyhoangserver.com'];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (whitelist.indexOf(req.header('Origin')) !== -1) {
@@ -966,7 +966,7 @@ app.post('/getallsanbay', cors(corsOptionsDelegate), function (req, res, next) {
 
 app.post('/getalltintuc', cors(corsOptionsDelegate), function (req, res, next) {
   var limit = req.body.limit;
-  pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc order by tintuc.id desc limit $1", [limit])
+  pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten,vitri FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc order by vitri asc, tintuc.id desc limit $1", [limit])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
@@ -1053,7 +1053,7 @@ app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res
 
 app.post('/getalltintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
   var id = req.body.id;
-  pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc where tintuc.id=$1", [id])
+  pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten,vitri FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc where tintuc.id=$1", [id])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
@@ -1185,10 +1185,11 @@ app.post('/addtintuc', cors(corsOptionsDelegate), function (req, res, next) {
   var noidung = req.body.contentStateNoiDung;
   var motangan = req.body.contentStateTomTat;
   var keyword = req.body.keyword;
+  var vitri = req.body.vitri;
   var danhmuc = req.body.danhmuc;
   var hinhdaidien = req.body.hinhdaidien;
   var slug = ChangeToSlug(req.body.tieude);
-  pool.query("INSERT INTO tintuc (tieude,slug,noidung,hinhdaidien,iddanhmuc,motangan,des,keyword) VALUES ('" + tieude + "', '" + slug + "','" + noidung + "','" + hinhdaidien + "','" + danhmuc + "','" + motangan + "','" + des + "','" + keyword + "')")
+  pool.query("INSERT INTO tintuc (tieude,slug,noidung,hinhdaidien,iddanhmuc,motangan,des,keyword,vitri) VALUES ('" + tieude + "', '" + slug + "','" + noidung + "','" + hinhdaidien + "','" + danhmuc + "','" + motangan + "','" + des + "','" + keyword + "','" + vitri + "')")
     .then(result => {
       return result;
     }).then(result => {
@@ -1205,10 +1206,11 @@ app.post('/edittintucbyid', cors(corsOptionsDelegate), function (req, res, next)
   var noidung = req.body.contentStateNoiDung;
   var motangan = req.body.contentStateTomTat;
   var keyword = req.body.keyword;
-  var danhmuc = req.body.danhmuc;
+  var vitri = req.body.vitri;
+  var danhmuc = parseInt(req.body.danhmuc);
   var hinhdaidien = req.body.hinhdaidien;
   var slug = ChangeToSlug(req.body.tieude);
-  pool.query("UPDATE tintuc SET tieude = $1,des = $2,noidung = $3,motangan = $4,keyword = $5,iddanhmuc = $6,hinhdaidien = $7,slug = $8  WHERE id=$9 RETURNING id", [tieude, des, noidung, motangan, keyword, danhmuc, hinhdaidien, slug, idtintuc])
+  pool.query("UPDATE tintuc SET tieude = $1,des = $2,noidung = $3,motangan = $4,keyword = $5,iddanhmuc = $6,hinhdaidien = $7,slug = $8,vitri = $9  WHERE id=$10 RETURNING id", [tieude, des, noidung, motangan, keyword, danhmuc, hinhdaidien, slug, vitri, idtintuc])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
