@@ -964,6 +964,27 @@ app.post('/getallsanbay', cors(corsOptionsDelegate), function (req, res, next) {
     .catch(e => console.error(e.stack));
 });
 
+app.post('/getallvungmien', cors(corsOptionsDelegate), function (req, res, next) {
+  pool.query("SELECT * FROM  vungmien")
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
 app.post('/getalltintuc', cors(corsOptionsDelegate), function (req, res, next) {
   var limit = req.body.limit;
   pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten,vitri FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc order by vitri asc, tintuc.id desc limit $1", [limit])
@@ -988,7 +1009,7 @@ app.post('/getalltintuc', cors(corsOptionsDelegate), function (req, res, next) {
 
 app.post('/getalltinkhuyenmai', cors(corsOptionsDelegate), function (req, res, next) {
   var limit = req.body.limit;
-  pool.query("SELECT * FROM  tinkhuyenmai order by id desc limit $1", [limit])
+  pool.query("SELECT * FROM  tinkhuyenmai order by vitri asc, id desc limit $1", [limit])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
@@ -1054,6 +1075,28 @@ app.post('/getalltintucbydanhmuc', cors(corsOptionsDelegate), function (req, res
 app.post('/getalltintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
   var id = req.body.id;
   pool.query("SELECT tintuc.id,iddanhmuc,tieude,tintuc.slug,noidung,hinhdaidien,motangan,des,keyword,ten,vitri FROM  tintuc LEFT JOIN danhmuctintuc ON danhmuctintuc.id = tintuc.iddanhmuc where tintuc.id=$1", [id])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/getalltinkhuyenmaibyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var id = req.body.id;
+  pool.query("SELECT * FROM  tinkhuyenmai where id=$1", [id])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
@@ -1199,6 +1242,25 @@ app.post('/addtintuc', cors(corsOptionsDelegate), function (req, res, next) {
     .catch(e => console.error(e.stack));
 });
 
+app.post('/addtinkhuyenmai', cors(corsOptionsDelegate), function (req, res, next) {
+  var tieude = req.body.tieude;
+  var des = req.body.des;
+  var noidung = req.body.contentStateNoiDung;
+  var motangan = req.body.contentStateTomTat;
+  var keyword = req.body.keyword;
+  var vitri = req.body.vitri;
+  var hinhdaidien = req.body.hinhdaidien;
+  var slug = ChangeToSlug(req.body.tieude);
+  pool.query("INSERT INTO tinkhuyenmai (tieude,slug,noidung,hinhdaidien,motangan,des,keyword,vitri) VALUES ('" + tieude + "', '" + slug + "','" + noidung + "','" + hinhdaidien + "','" + motangan + "','" + des + "','" + keyword + "','" + vitri + "')")
+    .then(result => {
+      return result;
+    }).then(result => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ result: "ok" }, null, 3));
+    })
+    .catch(e => console.error(e.stack));
+});
+
 app.post('/edittintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
   var idtintuc = req.body.idtintuc;
   var tieude = req.body.tieude;
@@ -1230,9 +1292,61 @@ app.post('/edittintucbyid', cors(corsOptionsDelegate), function (req, res, next)
     .catch(e => console.error(e.stack));
 });
 
+app.post('/edittinkhuyenmaibyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var idtintuc = req.body.idtintuc;
+  var tieude = req.body.tieude;
+  var des = req.body.des;
+  var noidung = req.body.contentStateNoiDung;
+  var motangan = req.body.contentStateTomTat;
+  var keyword = req.body.keyword;
+  var vitri = req.body.vitri;
+  var hinhdaidien = req.body.hinhdaidien;
+  var slug = ChangeToSlug(req.body.tieude);
+  pool.query("UPDATE tinkhuyenmai SET tieude = $1,des = $2,noidung = $3,motangan = $4,keyword = $5,hinhdaidien = $6,slug = $7,vitri = $8  WHERE id=$9 RETURNING id", [tieude, des, noidung, motangan, keyword, hinhdaidien, slug, vitri, idtintuc])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
 app.post('/deletetintucbyid', cors(corsOptionsDelegate), function (req, res, next) {
   var idtintuc = req.body.idtintuc;
   pool.query("DELETE FROM tintuc WHERE id=$1 RETURNING id", [idtintuc])
+    .then(result => {
+      if (result.rows.length === 0) {
+        return false;
+      } else {
+        return result;
+      }
+    }).then(result => {
+      if (result === false) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "fail" }, null, 3));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ result: "ok", data: result.rows }, null, 3));
+      }
+
+    })
+    .catch(e => console.error(e.stack));
+});
+
+app.post('/deletetinkhuyenmainbyid', cors(corsOptionsDelegate), function (req, res, next) {
+  var idtintuc = req.body.idtintuc;
+  pool.query("DELETE FROM tinkhuyenmai WHERE id=$1 RETURNING id", [idtintuc])
     .then(result => {
       if (result.rows.length === 0) {
         return false;
