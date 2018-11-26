@@ -122,6 +122,17 @@ const xoa_dau = (str) => {
   return str;
 }
 
+// function getCookies(callback) {
+
+//   request('http://vebaygiare247.vn/tim-ve-truc-tuyen?sessionid=123', function (error, response, body) {
+//     if (!error && response.statusCode == 200) {
+//       return callback(null, response.headers['set-cookie']);
+//     } else {
+//       return callback(error);
+//     }
+//   })
+// }
+
 const sendMailNow = (iddonhang) => {
   var iddonhang = iddonhang;
   var temparray = [];
@@ -607,6 +618,210 @@ function makeidrandom() {
   return text;
 }
 
+function makecharacterrandom() {
+  var text = "";
+  var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+  for (var i = 0; i < 32; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  return text;
+}
+
+// var reloadsession = request('http://vebaygiare247.vn', function (error, response, body) {
+//   if (!error && response.statusCode == 200) {
+//     console.log(body);
+//     var getcookie = response.headers['set-cookie'];
+//     var str = getcookie[0];
+//     var result = str.split(";");
+//     var sessid = result[0].split("=");
+
+//     var optionsgetSess = {
+//       method: 'POST',
+//       url: 'http://vebaygiare247.vn/tim-ve-truc-tuyen?sessionid=1c2ce2acd5d048c6de391cadc9b44004',
+//       headers:
+//       {
+//         'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+//         'cache-control': 'no-cache',
+//         'content-type': 'application/x-www-form-urlencoded',
+//         'Cookie': "PHPSESSID=" + sessid[1] + "; path=/; domain=.vebaygiare247.vn; Expires=Tue, 19 Jan 2038 03:14:07 GMT;",
+//       },
+//       form:
+//       {
+//         direction: '0',
+//         loaive: '0',
+//         depinput: '',
+//         desinput: '',
+//         dep: 'SGN',
+//         des: 'HAN',
+//         depdate: '01-01-2019',
+//         resdate: '',
+//         adult: '1',
+//         child: '0',
+//         infant: '0',
+//         cache: '',
+//         typeflight: '0'
+//       }
+//     };
+
+//     request(optionsgetSess, function (error, response, body) {
+//       if (!error && response.statusCode == 200) {
+//         reloadsession = sessid[1];
+//         console.log("first")
+//         console.log(reloadsession)
+//         return reloadsession;
+//       } else {
+//         return callback(error);
+//       }
+//     });
+//   } else {
+//     return error;
+//   }
+// });
+// setInterval(function () {
+//   request('http://vebaygiare247.vn', function (error, response, body) {
+//     if (!error && response.statusCode == 200) {
+//       var getcookie = response.headers['set-cookie'];
+//       var str = getcookie[0];
+//       var result = str.split(";");
+//       var sessid = result[0].split("=");
+//       //reloadsession = sessid[1];
+//       var optionsgetSess = {
+//         method: 'POST',
+//         url: 'http://vebaygiare247.vn/tim-ve-truc-tuyen?sessionid=1c2ce2acd5d048c6de391cadc9b44004',
+//         headers:
+//         {
+//           'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+//           'cache-control': 'no-cache',
+//           'content-type': 'application/x-www-form-urlencoded',
+//           'Cookie': "PHPSESSID=" + sessid[1] + "; path=/; domain=.vebaygiare247.vn; Expires=Tue, 19 Jan 2038 03:14:07 GMT;",
+//         },
+//         form:
+//         {
+//           direction: '0',
+//           loaive: '0',
+//           depinput: '',
+//           desinput: '',
+//           dep: 'SGN',
+//           des: 'HAN',
+//           depdate: '01-01-2019',
+//           resdate: '',
+//           adult: '1',
+//           child: '0',
+//           infant: '0',
+//           cache: '',
+//           typeflight: '0'
+//         }
+//       };
+
+//       request(optionsgetSess, function (error, response, body) {
+//         if (!error && response.statusCode == 200) {
+//           reloadsession = sessid[1];
+//           console.log("second2")
+//           console.log(reloadsession)
+//         } else {
+//           return callback(error);
+//         }
+//       });
+
+//     } else {
+//       return error;
+//     }
+//   })
+// }, 300000);
+
+app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
+
+  var dep = req.body.dep;
+  var des = req.body.des;
+  var datedep = req.body.datedep;
+  var datedes = req.body.datedes;
+  var adult = req.body.adult === null ? '0' : req.body.adult;
+  var child = req.body.child === null ? '0' : req.body.child;
+  var inf = req.body.inf === null ? '0' : req.body.inf;
+
+  var reloadsession = request('http://vebaygiare247.vn', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var getcookie = response.headers['set-cookie'];
+      var str = getcookie[0];
+      var result = str.split(";");
+      var sessid = result[0].split("=");
+      var randomchar = makecharacterrandom();
+
+      var optionsgetSess = {
+        method: 'POST',
+        url: 'http://vebaygiare247.vn/tim-ve-truc-tuyen?sessionid=' + randomchar,
+        headers:
+        {
+          'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+          'cache-control': 'no-cache',
+          'content-type': 'application/x-www-form-urlencoded',
+          'Cookie': "PHPSESSID=" + sessid[1] + "; path=/; domain=.vebaygiare247.vn; Expires=Tue, 19 Jan 2038 03:14:07 GMT;",
+        },
+        form:
+        {
+          direction: '0',
+          loaive: '0',
+          depinput: '',
+          desinput: '',
+          dep: dep,
+          des: des,
+          depdate: datedep,
+          resdate: '',
+          adult: adult,
+          child: child,
+          infant: inf,
+          cache: '',
+          typeflight: '0'
+        }
+      };
+
+      request(optionsgetSess, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          var sessionbefore = sessid[1];
+          var option = {
+            method: 'POST',
+            url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
+            qs: { airlines: 'js' },
+            headers:
+            {
+              'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
+              'cache-control': 'no-cache',
+              'content-type': 'application/x-www-form-urlencoded',
+              'Cookie': "PHPSESSID=" + sessionbefore + "; path=/; domain=.vebaygiare247.vn; Expires=Tue, 19 Jan 2038 03:14:07 GMT;",
+            },
+            form:
+            {
+              direction: '0',
+              loaive: '0',
+              depinput: '',
+              desinput: '',
+              dep: dep,
+              des: des,
+              depdate: datedep,
+              resdate: '',
+              adult: adult,
+              child: child,
+              infant: inf,
+              cache: '',
+              typeflight: '0'
+            }
+          };
+
+          request(option, function (error, response, body) {
+            if (error) {
+              console.log(error)
+            };
+            res.send(body);
+          });
+        } else {
+          return callback(error);
+        }
+      });
+    } else {
+      return error;
+    }
+  });
+});
+
 app.post('/vn', cors(corsOptionsDelegate), function (req, res, next) {
 
 
@@ -651,54 +866,6 @@ app.post('/vn', cors(corsOptionsDelegate), function (req, res, next) {
     };
     res.send(body);
   });
-});
-
-app.post('/js', cors(corsOptionsDelegate), function (req, res, next) {
-
-
-  var dep = req.body.dep;
-  var des = req.body.des;
-  var datedep = req.body.datedep;
-  var datedes = req.body.datedes;
-  var adult = req.body.adult === null ? '0' : req.body.adult;
-  var child = req.body.child === null ? '0' : req.body.child;
-  var inf = req.body.inf === null ? '0' : req.body.inf;
-
-  var options = {
-    method: 'POST',
-    url: 'http://vebaygiare247.vn/vebaygiare247.vn/tim-ve',
-    qs: { airlines: 'js' },
-    headers:
-    {
-      'postman-token': 'e991929b-b677-ecb1-e766-d55255b0af77',
-      'cache-control': 'no-cache',
-      'content-type': 'application/x-www-form-urlencoded'
-    },
-    form:
-    {
-      direction: '0',
-      loaive: '0',
-      depinput: '',
-      desinput: '',
-      dep: dep,
-      des: des,
-      depdate: datedep,
-      resdate: '',
-      adult: adult,
-      child: child,
-      infant: inf,
-      cache: '',
-      typeflight: '0'
-    }
-  };
-
-  request(options, function (error, response, body) {
-    if (error) {
-      console.log(error)
-    };
-    res.send(body);
-  });
-
 });
 
 app.post('/vj', cors(corsOptionsDelegate), function (req, res, next) {
@@ -1367,6 +1534,7 @@ app.post('/deletetinkhuyenmainbyid', cors(corsOptionsDelegate), function (req, r
 });
 
 app.get('/', (req, res) => {
+  //console.log(reloadsession);
   res.send('YOUR EXPRESS BACKEND IS CONNECTED TO REACT');
 });
 
