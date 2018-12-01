@@ -599,7 +599,7 @@ ${value.quydanh === "betrai" || value.quydanh === "begai" ? `<span style="displa
 
 var cors = require('cors');
 app.options('*', cors());
-var whitelist = ['http://vemaybayhuyhoang.ga', 'http://localhost:3000', 'http://vemaybayhuyhoangserver.com'];
+var whitelist = ['http://vemaybayhuyhoang.ga', 'http://localhost:3000', 'http://vemaybayhuyhoangserver.com','http://nghiakhoi.ga'];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (whitelist.indexOf(req.header('Origin')) !== -1) {
